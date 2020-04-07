@@ -302,7 +302,7 @@ class BacktestingEngine:
             self.output("成交记录为空，无法计算")
             return
 
-        # Add trade data into daily reuslt.
+        # Add trade data into daily result.
         for trade in self.trades.values():
             d = trade.datetime.date()
             daily_result = self.daily_results[d]
@@ -504,20 +504,33 @@ class BacktestingEngine:
             return
 
         plt.figure(figsize=(10, 16))
+        # 增加收盘价曲线
+        results = defaultdict(list)
+        for data_result in self.history_data:
+            for key, value in data_result.__dict__.items():
+                if key == 'datetime':
+                    results[key].append(value.date())
+                else:
+                    results[key].append(value)
 
-        balance_plot = plt.subplot(4, 1, 1)
+        date_df = DataFrame.from_dict(results).set_index("datetime")
+        close_price = plt.subplot(5, 1, 1)
+        close_price.set_title("Close Price")
+        date_df['close_price'].plot(legend=True)
+
+        balance_plot = plt.subplot(5, 1, 2)
         balance_plot.set_title("Balance")
         df["balance"].plot(legend=True)
 
-        drawdown_plot = plt.subplot(4, 1, 2)
+        drawdown_plot = plt.subplot(5, 1, 3)
         drawdown_plot.set_title("Drawdown")
         drawdown_plot.fill_between(range(len(df)), df["drawdown"].values)
 
-        pnl_plot = plt.subplot(4, 1, 3)
+        pnl_plot = plt.subplot(5, 1, 4)
         pnl_plot.set_title("Daily Pnl")
         df["net_pnl"].plot(kind="bar", legend=False, grid=False, xticks=[])
 
-        distribution_plot = plt.subplot(4, 1, 4)
+        distribution_plot = plt.subplot(5, 1, 5)
         distribution_plot.set_title("Daily Pnl Distribution")
         df["net_pnl"].hist(bins=50)
 
@@ -771,7 +784,7 @@ class BacktestingEngine:
             if not long_cross and not short_cross:
                 continue
 
-            # Push order udpate with status "all traded" (filled).
+            # Push order update with status "all traded" (filled).
             order.traded = order.volume
             order.status = Status.ALLTRADED
             self.strategy.on_order(order)

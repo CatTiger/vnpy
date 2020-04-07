@@ -16,7 +16,7 @@ from peewee import (
 )
 
 from vnpy.trader.constant import Exchange, Interval
-from vnpy.trader.object import BarData, TickData
+from vnpy.trader.object import BarData, TickData, TradeDate
 from vnpy.trader.utility import get_file_path
 from .database import BaseDatabaseManager, Driver
 
@@ -30,8 +30,8 @@ def init(driver: Driver, settings: dict):
     assert driver in init_funcs
 
     db = init_funcs[driver](settings)
-    bar, tick = init_models(db, driver)
-    return SqlManager(bar, tick)
+    bar, tick, trade_date = init_models(db, driver)
+    return SqlManager(bar, tick, trade_date)
 
 
 def init_sqlite(settings: dict):
@@ -319,16 +319,87 @@ def init_models(db: Database, driver: Driver):
                     for c in chunked(dicts, 50):
                         DbTickData.insert_many(c).on_conflict_replace().execute()
 
+    class DbTradeDatesData(ModelBase):
+        """
+        交易日数据
+        """
+        id = AutoField()
+        exchange: str = CharField()
+        cal_date: str = CharField()
+        is_open: int = FloatField()
+
+        class Meta:
+            database = db
+            indexes = ((("cal_date"), True),)
+
+        @staticmethod
+        def from_trade_date(trade_date: TradeDate):
+            db_trade_date = DbTradeDatesData()
+
+            db_trade_date.exchange = trade_date.exchange.value
+            db_trade_date.cal_date = trade_date.cal_date
+            db_trade_date.is_open = trade_date.is_open
+
+            return db_trade_date
+
+        def to_trade_date(self):
+            trade_date = TradeDate(
+                exchange=Exchange(self.exchange),
+                cal_date=self.cal_date,
+                is_open=self.is_open,
+            )
+            return trade_date
+
+        @staticmethod
+        def save_all(objs: List["DbTradeDatesData"]):
+            """
+            save a list of objects, update if exists.
+            """
+            dicts = [i.to_dict() for i in objs]
+            with db.atomic():
+                if driver is Driver.POSTGRESQL:
+                    for trade_date in dicts:
+                        DbTradeDatesData.insert(trade_date).on_conflict(
+                            update=trade_date,
+                            conflict_target=(
+                                DbTradeDatesData.exchange,
+                                DbTradeDatesData.cal_date,
+                                DbTradeDatesData.is_open,
+                            ),
+                        ).execute()
+                else:
+                    for c in chunked(dicts, 50):
+                        DbTradeDatesData.insert_many(
+                            c).on_conflict_replace().execute()
+
     db.connect()
-    db.create_tables([DbBarData, DbTickData])
-    return DbBarData, DbTickData
+    db.create_tables([DbBarData, DbTickData, DbTradeDatesData])
+    return DbBarData, DbTickData, DbTradeDatesData
 
 
 class SqlManager(BaseDatabaseManager):
 
-    def __init__(self, class_bar: Type[Model], class_tick: Type[Model]):
+    def __init__(self, class_bar: Type[Model], class_tick: Type[Model], class_trade_date: Type[Model]):
         self.class_bar = class_bar
         self.class_tick = class_tick
+        self.class_trade_date = class_trade_date
+
+    def save_trade_date(
+            self, datas: Sequence[TradeDate]):
+        ds = [self.class_trade_date.from_trade_date(i) for i in datas]
+        self.class_trade_date.save_all(ds)
+
+    def load_trade_dates(
+            self,
+            start_date = '',
+            end_date = ''
+    ) -> Sequence[TradeDate]:
+        s = (
+            self.class_trade_date.select()
+                .order_by(self.class_trade_date.cal_date)
+        )
+        data = [db_trade_date.to_trade_date() for db_trade_date in s]
+        return data
 
     def load_bar_data(
         self,

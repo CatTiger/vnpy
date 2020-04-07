@@ -15,7 +15,7 @@ import talib
 
 from .object import BarData, TickData
 from .constant import Exchange, Interval
-
+import statsmodels.api as sm
 
 log_formatter = logging.Formatter('[%(asctime)s] %(message)s')
 
@@ -159,11 +159,11 @@ class BarGenerator:
     """
 
     def __init__(
-        self,
-        on_bar: Callable,
-        window: int = 0,
-        on_window_bar: Callable = None,
-        interval: Interval = Interval.MINUTE
+            self,
+            on_bar: Callable,
+            window: int = 0,
+            on_window_bar: Callable = None,
+            interval: Interval = Interval.MINUTE
     ):
         """Constructor"""
         self.bar = None
@@ -229,7 +229,7 @@ class BarGenerator:
         """
         Update 1 minute bar into generator
         """
-        # If not inited, creaate window bar object
+        # If not inited, create window bar object
         if not self.window_bar:
             # Generate timestamp for bar data
             if self.interval == Interval.MINUTE:
@@ -303,8 +303,10 @@ class ArrayManager(object):
     2. calculating technical indicator value
     """
 
-    def __init__(self, size=100):
+    def __init__(self, size=100, zscore_data=None, rsrs_n=18):
         """Constructor"""
+        if zscore_data is None:
+            zscore_data = []
         self.count = 0
         self.size = size
         self.inited = False
@@ -314,6 +316,25 @@ class ArrayManager(object):
         self.low_array = np.zeros(size)
         self.close_array = np.zeros(size)
         self.volume_array = np.zeros(size)
+        # add by cattiger, RSRS斜率标准化需要的数据
+        if zscore_data:
+            self.rsrs_n = rsrs_n
+            self.rsrs_m = len(zscore_data)
+            self.beta_array = []
+            self.rightdev_array = []
+            self.his_highs = []
+            self.his_lows = []
+            for data in zscore_data:
+                self.his_highs.append(data.high_price)
+                self.his_lows.append(data.low_price)
+            for i in range(len(zscore_data))[rsrs_n:]:
+                data_high = self.his_highs[i - rsrs_n + 1:i + 1]
+                data_low = self.his_lows[i - rsrs_n + 1:i + 1]
+                X = sm.add_constant(data_low)
+                model = sm.OLS(data_high, X)
+                results = model.fit()
+                self.beta_array.append(results.params[1])
+                self.rightdev_array.append(results.rsquared)
 
     def update_bar(self, bar):
         """
@@ -507,6 +528,45 @@ class ArrayManager(object):
         if array:
             return result
         return result[-1]
+
+    def rsrs_std(self):
+        """rsrs计算"""
+        self.his_highs.append(self.high_array[-1])
+        self.his_lows.append(self.low_array[-1])
+        X = sm.add_constant(self.his_lows[-self.rsrs_n:])
+        model = sm.OLS(self.his_highs[-self.rsrs_n:], X)
+        beta = model.fit().params[1]
+        r2 = model.fit().rsquared
+        self.beta_array.append(beta)
+        self.rightdev_array.append(r2)
+        # 计算标准化的RSRS指标
+        section = self.beta_array[-self.rsrs_m:]
+        # 计算均值序列
+        mu = np.mean(section)
+        # 计算标准化RSRS指标序列
+        sigma = np.std(section)
+        zscore = (section[-1] - mu) / sigma
+        # 计算右偏RSRS标准分
+        return zscore * beta * r2
+
+    def rsrs_repair(self):
+        self.his_highs.append(self.high_array[-1])
+        self.his_lows.append(self.low_array[-1])
+        X = sm.add_constant(self.his_lows[-self.rsrs_n:])
+        model = sm.OLS(self.his_highs[-self.rsrs_n:], X)
+        beta = model.fit().params[1]
+        r2 = model.fit().rsquared
+        self.beta_array.append(beta)
+        self.rightdev_array.append(r2)
+        # 计算标准化的RSRS指标
+        section = self.beta_array[-self.rsrs_m:]
+        # 计算均值序列
+        mu = np.mean(section)
+        # 计算标准化RSRS指标序列
+        sigma = np.std(section)
+        zscore = (section[-1] - mu) / sigma
+        # 计算右偏RSRS标准分
+        return zscore * beta * r2
 
 
 def virtual(func: "callable"):
