@@ -1,3 +1,6 @@
+from pandas import DataFrame
+
+
 def normalize(numbers):
     total = sum(numbers)
     result = []
@@ -22,8 +25,10 @@ def normalize_func(it):
     return result
 
 
-print(normalize_func(lambda: read('numbers.txt')))
-print(normalize_func(lambda: read('numbers.txt')))
-cMD5 = '74c1877caa2c9904d1f77ef6df09a9d8'
-
-print(cMD5[4]+cMD5[1]+cMD5[16]+cMD5[9]+cMD5[19]+cMD5[30]+cMD5[28]+cMD5[22])
+dfcvs = DataFrame([
+    ["2018/09/17-21:34", 3646, 3650, 3644, 3650],
+    ["2018/09/17-21:35", 3650, 3650, 3648, 3648],
+    ["2018/09/17-21:36", 3650, 3650, 3648, 3650],
+    ["2018/09/17-21:37", 3652, 3654, 3648, 3652]])
+data_mat = dfcvs.as_matrix()
+print(data_mat)

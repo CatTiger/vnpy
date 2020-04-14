@@ -2,11 +2,11 @@ from jqdatasdk import *
 import vnpy.trader.constant as const
 from vnpy.trader.object import BarData
 from vnpy.trader.database import database_manager
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 if __name__ == "__main__":
     auth('13277099856', '1221gzcC')
-    is_auth = is_auth()
+    auth('13277099856', '1221gzcC')
     print(is_auth)
     data = get_bars('510050.XSHG', 5000, unit='1d',
              fields=['date', 'open', 'high', 'low', 'close', 'volume'],
