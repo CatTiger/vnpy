@@ -44,7 +44,7 @@ class CtaTemplate(ABC):
 
     def update_setting(self, setting: dict):
         """
-        Update strategy parameter wtih value in setting dict.
+        Update strategy parameter with value in setting dict.
         """
         for name in self.parameters:
             if name in setting:

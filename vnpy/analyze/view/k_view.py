@@ -1,20 +1,23 @@
 import datetime as dt
+
 import matplotlib.dates as dates
 import matplotlib.pyplot as plt
+import pandas as pd
 import pylab
-from jqdatasdk import *
 from matplotlib import ticker
 from mplfinance.original_flavor import candlestick_ohlc
 from pandas import DataFrame
-import vnpy.analyze.view.view_util as vutil
+
 import vnpy.analyze.data.data_prepare as dp
-import pandas as pd
+import vnpy.analyze.view.view_util as vutil
+from vnpy.trader.constant import Direction
+from vnpy.trader.utility import round_to
 
 slow_ma = 5
 fast_ma = 10
 
 
-def draw(days: DataFrame):
+def draw(days: DataFrame, trades=None):
     """作图"""
     days['date'] = pd.to_datetime(days['date'])
     days['date'] = days['date'].apply(lambda x: dates.date2num(x))
@@ -134,18 +137,33 @@ def draw(days: DataFrame):
 
     # buy and sell annotate
     # TODO: 箭头的长度可以根据ATR确定
-    ax.annotate("BUY, date:,price:", xy=(733919, 3000), xycoords='data', color='yellow',
-                bbox=dict(boxstyle="round", fc="none", ec="yellow"),
-                xytext=(0, -40), textcoords='offset points', ha='center',
-                arrowprops=dict(color='yellow', arrowstyle="->"))
-
-    ax.annotate("Sell, date:,price:", xy=(733919, 3000), xycoords='data', color='green',
-                bbox=dict(boxstyle="round", fc="none", ec="green"),
-                xytext=(0, 40), textcoords='offset points', ha='center',
-                arrowprops=dict(color='green', arrowstyle="->"))
+    if trades is not None:
+        for trade in trades.values():
+            info = '%s,%s,%s' % (trade.datetime.strftime("%Y/%m/%d"), round_to(trade.price, 0.01), trade.volume)
+            if Direction.LONG == trade.direction:
+                ax.annotate(info, xy=(dates.date2num(trade.datetime), trade.price), xycoords='data', color='yellow',
+                            bbox=dict(boxstyle="round", fc="none", ec="yellow"),
+                            xytext=(0, -40), textcoords='offset points', ha='center',
+                            arrowprops=dict(color='yellow', arrowstyle="->"))
+            if Direction.SHORT == trade.direction:
+                ax.annotate(info, xy=(dates.date2num(trade.datetime), trade.price), xycoords='data', color='green',
+                            bbox=dict(boxstyle="round", fc="none", ec="green"),
+                            xytext=(0, 40), textcoords='offset points', ha='center',
+                            arrowprops=dict(color='green', arrowstyle="->"))
 
     plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
     plt.show()
+
+
+def draw_backtesting(his_data, trades=None):
+    # his_data转dataframe
+    df = pd.DataFrame(columns=('date', 'open', 'high', 'low', 'close', 'volume'))
+    for data in his_data:
+        df = df.append(
+            {'date': data.datetime, 'open': data.open_price, 'high': data.high_price, 'low': data.low_price,
+             'close': data.close_price,
+             'volume': data.low_price}, ignore_index=True)
+    draw(df, trades)
 
 
 if __name__ == "__main__":
