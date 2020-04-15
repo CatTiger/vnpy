@@ -20,7 +20,6 @@ class MacdStrategy(CtaTemplate):
     available_balance = 100000
     force_loss_price = 0.0
 
-
     def __init__(self, cta_engine: Any, strategy_name: str, vt_symbol: str, setting: dict):
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
         self.his_data_dict = setting['his_data_dict']
@@ -51,7 +50,7 @@ class MacdStrategy(CtaTemplate):
 
         # TODO: 添加止损策略
         metric_atr = am.atr(14)
-        if bar.close_price < self.force_loss_price:
+        if bar.close_price < self.force_loss_price and self.pos > 0:
             self.sell(next_day_open_price, self.pos)
 
         if cross_over:

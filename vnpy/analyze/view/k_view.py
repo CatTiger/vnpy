@@ -12,6 +12,7 @@ import vnpy.analyze.data.data_prepare as dp
 import vnpy.analyze.view.view_util as vutil
 from vnpy.trader.constant import Direction
 from vnpy.trader.utility import round_to
+import math
 
 slow_ma = 5
 fast_ma = 10
@@ -43,7 +44,7 @@ def draw(days: DataFrame, trades=None):
 
     # 样式设置
     ax.grid(True, color='w')
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(10))
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(math.floor(days_reshape.__len__() / 22)))
     ax.xaxis.set_major_formatter(dates.DateFormatter('%Y-%m-%d'))
     ax.yaxis.label.set_color("w")
     ax.spines['bottom'].set_color("#5998ff")
@@ -115,8 +116,13 @@ def draw(days: DataFrame, trades=None):
     macd = df['MACD_12_26']
     ax2.plot(days_reshape.date.values[-SP:], macd[-SP:], color='#4ee6fd', lw=2)
     ax2.plot(days_reshape.date.values[-SP:], ema9[-SP:], color='#e1edf9', lw=1)
-    ax2.fill_between(days_reshape.date.values[-SP:], macd[-SP:] - ema9[-SP:], 0, alpha=0.5, facecolor=fillcolor,
-                     edgecolor=fillcolor)
+    # 红色填充大于0区域、绿色填充小于0区域
+    ax2.fill_between(days_reshape.date.values[-SP:], macd[-SP:] - ema9[-SP:], 0, where=(macd[-SP:] - ema9[-SP:] > 0),
+                     alpha=0.5, facecolor=negCol,
+                     edgecolor=negCol)
+    ax2.fill_between(days_reshape.date.values[-SP:], macd[-SP:] - ema9[-SP:], 0, where=(macd[-SP:] - ema9[-SP:] < 0),
+                     alpha=0.5, facecolor=posCol,
+                     edgecolor=posCol)
     plt.gca().yaxis.set_major_locator(ticker.MaxNLocator(prune='upper'))
     ax2.spines['bottom'].set_color("#5998ff")
     ax2.spines['top'].set_color("#5998ff")
