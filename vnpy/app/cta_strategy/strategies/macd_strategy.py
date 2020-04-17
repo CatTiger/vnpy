@@ -52,13 +52,16 @@ class MacdStrategy(CtaTemplate):
         metric_atr = am.atr(14)
         if bar.close_price < self.force_loss_price and self.pos > 0:
             self.sell(next_day_open_price, self.pos)
+            return
 
         if cross_over:
+            print('buy:' + bar.datetime.strftime('%Y-%m-%d'))
             burden_pos = math.floor(self.available_balance / next_day_open_price)
             self.buy(next_day_open_price, burden_pos)
             self.force_loss_price = next_day_open_price - metric_atr * 2
 
         if cross_below and self.pos > 0:
+            print('sell:' + bar.datetime.strftime('%Y-%m-%d'))
             self.sell(next_day_open_price, self.pos)
 
     def on_trade(self, trade: TradeData):

@@ -132,6 +132,8 @@ class Exchange(Enum):
         exchange = ''
         if alias == 'XSHG':
             exchange = Exchange.SSE
+        if alias == 'XSHE':
+            exchange = Exchange.SZSE
         if exchange == '':
             raise KeyError('unknown exchange alias:')
         return exchange

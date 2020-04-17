@@ -77,4 +77,6 @@ def load_bar_data(symbol, alias, start_date: datetime = None, end_data: datetime
 if __name__ == "__main__":
     # print(const.Exchange.get_exchange_by_alias('XSHG'))
     # save_data_to_db('000001', 'XSHG', 1)
-    load_bar_data('000001', 'XSHG', start_date=datetime(2010, 1, 1), end_data=datetime(2010, 5, 1))
+    # load_bar_data('000001', 'XSHG', start_date=datetime(2010, 1, 1), end_data=datetime(2010, 5, 1))
+    save_data_to_db('399005', 'XSHE', 5000)
+

@@ -37,6 +37,6 @@ if __name__ == '__main__':
     engine.run_backtesting()
     engine.calculate_result()
     engine.calculate_statistics()
-    # 过滤器：1、支撑阻力，2、超买、超卖，3、成交量，4、周期性（趋势确认），5、蜡烛图形态
+    # 过滤器：1、支撑阻力(boll)，2、超买、超卖(KDJ)，3、成交量，4、周期性（趋势确认），5、蜡烛图形态, 6、背离
     # engine.show_chart()
-    kview.draw_backtesting(engine.history_data, engine.trades)
+    # kview.draw_backtesting(engine.history_data, engine.trades)
