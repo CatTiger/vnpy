@@ -174,5 +174,5 @@ def draw_backtesting(his_data, trades=None):
 
 if __name__ == "__main__":
     # 集合竞价 get_call_auction('002594.XSHE', "2020-04-07", "2020-04-08", fields=None)
-    days = dp.load_bar_data('000001', 'XSHG', start_date=dt.datetime(2010, 1, 1), end_data=dt.datetime(2011, 1, 1))
+    days = dp.load_bar_data('000001', 'XSHG', start_date=dt.datetime(2013, 1, 1), end_data=dt.datetime(2020, 1, 1))
     draw(days)

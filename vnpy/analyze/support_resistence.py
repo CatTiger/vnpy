@@ -521,10 +521,39 @@ class SupportResistanceLine():
         if is_new:
             plt.show()
 
+    def find_support_points(self):
+        self.find_best_poly(False)
+        self.find_extreme_pos(False)
+        self.find_real_extreme_points(False)
+        return self.support_resistance_df.y.values
+
+
+def test_support_line(datas):
+    start_idx = 0
+    df = pd.DataFrame()
+    trend_cnt = 0
+    for index, data in datas.iterrows():
+        start_idx = start_idx + 1
+        df = df.append({'y': data.close}, ignore_index=True)
+        if start_idx > 160:
+            support_line = SupportResistanceLine(df['y'], 'support')
+            supports = support_line.find_support_points()
+            if supports.__len__() > 2:
+                if supports[-3] < supports[-2] < supports[-1]:
+                    trend_cnt = trend_cnt + 1
+                else:
+                    print(data.date.strftime("%Y-%m-%d") + '结束, 持续天数:' + str(trend_cnt))
+                    trend_cnt = 0
+            else:
+                print('未找到足够的支撑点！！！')
+            df = df.drop(0)
+        if trend_cnt == 1:
+            print(data.date.strftime("%Y-%m-%d") + ',第一次,连续三次支撑点上升')
+
 
 if __name__ == '__main__':
-    # df = pd.read_pickle('df.pkl')
-    data = dp.load_bar_data('399005', 'XSHE', start_date=dt.datetime(2012, 1, 1), end_data=dt.datetime(2013, 1, 1))
-    y = data['close']
-    support_line = SupportResistanceLine(y, 'support')
+    data = dp.load_bar_data('510300', 'XSHG', start_date=dt.datetime(2018, 4, 1), end_data=dt.datetime(2019, 4, 16))
+    # test_support_line(data)
+    support_line = SupportResistanceLine(data['close'], 'support')
+    # support_line.show_both(show_step=True)
     support_line.show_both(show_step=True)

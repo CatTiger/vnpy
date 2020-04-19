@@ -60,7 +60,7 @@ def load_bar_data(symbol, alias, start_date: datetime = None, end_data: datetime
             df = df.append(
                 {'date': data.datetime, 'open': data.open_price, 'high': data.high_price, 'low': data.low_price,
                  'close': data.close_price,
-                 'volume': data.low_price}, ignore_index=True)
+                 'volume': data.volume}, ignore_index=True)
 
         progress += progress_delta / total_delta
         progress = min(progress, 1)
@@ -75,8 +75,36 @@ def load_bar_data(symbol, alias, start_date: datetime = None, end_data: datetime
 
 
 if __name__ == "__main__":
-    # print(const.Exchange.get_exchange_by_alias('XSHG'))
+    print(const.Exchange.get_exchange_by_alias('XSHG'))
     # save_data_to_db('000001', 'XSHG', 1)
     # load_bar_data('000001', 'XSHG', start_date=datetime(2010, 1, 1), end_data=datetime(2010, 5, 1))
-    save_data_to_db('399005', 'XSHE', 5000)
+    # save_data_to_db('159915', 'XSHE')  # 创业板
+    # save_data_to_db('510300', 'XSHG')  # 沪深300
+    # save_data_to_db('510500', 'XSHG')  # 中证500
+    # save_data_to_db('159901', 'XSHE')  # 深证100
+    # save_data_to_db('510880', 'XSHG')  # 红利ETF
+    # save_data_to_db('511010', 'XSHG')  # 国债ETF
+    # save_data_to_db('518880', 'XSHG')  # 黄金ETF
+    # save_data_to_db('159928', 'XSHE')  # 消费ETF
+    # save_data_to_db('501018', 'XSHG')  # 原油ETF
+    # save_data_to_db('513100', 'XSHG')  # 纳斯达克ETF
+    # df = df.append({'vol': 123}, ignore_index=True)
+    # df = df.append({'vol': 123}, ignore_index=True)
+    # print(df.__len__())
+    # df = df.drop(0, axis=0)
+    # print(df.__len__())
+    # datas = load_bar_data('000001', 'XSHG', start_date=datetime(2010, 1, 1), end_data=datetime(2011, 4, 1))
+    # df = pd.DataFrame()
+    # emotion_p = 0
+    # for index, data in datas.iterrows():
+    #     df = df.append({'vol': data.volume}, ignore_index=True)
+    #     # 当前量 < 6天均值 ，连续6天
+    #     if df.__len__() > 6:
+    #         if data.volume/df.vol.mean() - 1 < 0:
+    #             emotion_p = emotion_p + 1
+    #         else:
+    #             emotion_p = 0
+    #         df = df.drop(0, axis=0)
+    #     if emotion_p > 6:
+    #         print(data.date.strftime("%Y-%m-%d") + '连续5天低于平均值')
 
