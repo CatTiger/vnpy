@@ -88,6 +88,11 @@ if __name__ == "__main__":
     # save_data_to_db('159928', 'XSHE')  # 消费ETF
     # save_data_to_db('501018', 'XSHG')  # 原油ETF
     # save_data_to_db('513100', 'XSHG')  # 纳斯达克ETF
+    save_data_to_db('159995', 'XSHE')  #
+    save_data_to_db('513050', 'XSHG')  #
+    save_data_to_db('512290', 'XSHG')  #
+    save_data_to_db('512660', 'XSHG')  #
+
     # df = df.append({'vol': 123}, ignore_index=True)
     # df = df.append({'vol': 123}, ignore_index=True)
     # print(df.__len__())
