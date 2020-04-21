@@ -319,6 +319,8 @@ class CtaEngine(BaseEngine):
         vt_orderids = []
 
         for req in req_list:
+            req.reference = strategy.strategy_name      # Add strategy name as order reference
+
             vt_orderid = self.main_engine.send_order(
                 req, contract.gateway_name)
 
@@ -509,34 +511,49 @@ class CtaEngine(BaseEngine):
         """"""
         return self.engine_type
 
+    def get_pricetick(self, strategy: CtaTemplate):
+        """
+        Return contract pricetick data.
+        """
+        contract = self.main_engine.get_contract(strategy.vt_symbol)
+
+        if contract:
+            return contract.pricetick
+        else:
+            return None
+
     def load_bar(
         self,
         vt_symbol: str,
         days: int,
         interval: Interval,
-        callback: Callable[[BarData], None]
+        callback: Callable[[BarData], None],
+        use_database: bool
     ):
         """"""
         symbol, exchange = extract_vt_symbol(vt_symbol)
         end = datetime.now()
         start = end - timedelta(days)
+        bars = []
 
-        # Query bars from gateway if available
-        contract = self.main_engine.get_contract(vt_symbol)
+        # Pass gateway and RQData if use_database set to True
+        if not use_database:
+            # Query bars from gateway if available
+            contract = self.main_engine.get_contract(vt_symbol)
 
-        if contract and contract.history_data:
-            req = HistoryRequest(
-                symbol=symbol,
-                exchange=exchange,
-                interval=interval,
-                start=start,
-                end=end
-            )
-            bars = self.main_engine.query_history(req, contract.gateway_name)
+            if contract and contract.history_data:
+                req = HistoryRequest(
+                    symbol=symbol,
+                    exchange=exchange,
+                    interval=interval,
+                    start=start,
+                    end=end
+                )
+                bars = self.main_engine.query_history(req, contract.gateway_name)
 
-        # Try to query bars from RQData, if not found, load from database.
-        else:
-            bars = self.query_bar_from_rq(symbol, exchange, interval, start, end)
+            # Try to query bars from RQData, if not found, load from database.
+            else:
+                bars = self.query_bar_from_rq(symbol, exchange, interval, start, end)
 
         if not bars:
             bars = database_manager.load_bar_data(
@@ -763,6 +780,8 @@ class CtaEngine(BaseEngine):
                 elif filename.endswith(".pyd"):
                     strategy_module_name = ".".join(
                         [module_name, filename.split(".")[0]])
+                else:
+                    continue
 
                 self.load_strategy_class_from_module(strategy_module_name)
 
