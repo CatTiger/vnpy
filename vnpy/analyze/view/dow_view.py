@@ -59,20 +59,20 @@ def draw_close_price(benchmark_data, **kwargs):
 
 if __name__ == "__main__":
     benchmark = dp.load_bar_data('510300', 'XSHG', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
-
-    kv = {}
-    etf159915 = dp.load_bar_data('159915', 'XSHE', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
-    kv['ETF-159915'] = etf159915
-    etf510500 = dp.load_bar_data('510500', 'XSHG', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
-    kv['ETF-510500'] = etf510500
-    etf510880 = dp.load_bar_data('510880', 'XSHG', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
-    kv['ETF-510880'] = etf510880
-    etf518880 = dp.load_bar_data('518880', 'XSHG', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
-    kv['ETF-518880'] = etf518880
-    etf159928 = dp.load_bar_data('159928', 'XSHE', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
-    kv['ETF-159928'] = etf159928
-
-    draw_close_price(benchmark, **kv)
+    #
+    # kv = {}
+    # etf159915 = dp.load_bar_data('159915', 'XSHE', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
+    # kv['ETF-159915'] = etf159915
+    # etf510500 = dp.load_bar_data('510500', 'XSHG', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
+    # kv['ETF-510500'] = etf510500
+    # etf510880 = dp.load_bar_data('510880', 'XSHG', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
+    # kv['ETF-510880'] = etf510880
+    # etf518880 = dp.load_bar_data('518880', 'XSHG', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
+    # kv['ETF-518880'] = etf518880
+    # etf159928 = dp.load_bar_data('159928', 'XSHE', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 12, 1))
+    # kv['ETF-159928'] = etf159928
+    #
+    # draw_close_price(benchmark, **kv)
     # draw(benchmark, etf159928)
     # data2 = dp.load_bar_data('399005', 'XSHE', start_date=dt.datetime(2016, 1, 1), end_data=dt.datetime(2017, 1, 1))
     # print(data1.close.mean())
