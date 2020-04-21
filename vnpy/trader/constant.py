@@ -87,9 +87,12 @@ class Exchange(Enum):
     SZSE = "SZSE"  # Shenzhen Stock Exchange
     SGE = "SGE"  # Shanghai Gold Exchange
     WXE = "WXE"  # Wuxi Steel Exchange
+    CFETS = "CFETS"  # China Foreign Exchange Trade System
 
     # Global
     SMART = "SMART"  # Smart Router for US stocks
+    NYSE = "NYSE"  # New York Stock Exchnage
+    NASDAQ = "NASDAQ"  # Nasdaq Exchange
     NYMEX = "NYMEX"  # New York Mercantile Exchange
     COMEX = "COMEX"  # a division of theNew York Mercantile Exchange
     GLOBEX = "GLOBEX"  # Globex of CME
@@ -98,6 +101,7 @@ class Exchange(Enum):
     ICE = "ICE"  # Intercontinental Exchange
     SEHK = "SEHK"  # Stock Exchange of Hong Kong
     HKFE = "HKFE"  # Hong Kong Futures Exchange
+    HKSE = "HKSE"  # Hong Kong Stock Exchange
     SGX = "SGX"  # Singapore Global Exchange
     CBOT = "CBT"  # Chicago Board of Trade
     CBOE = "CBOE"  # Chicago Board Options Exchange
@@ -121,6 +125,7 @@ class Exchange(Enum):
     BINANCE = "BINANCE"
     BYBIT = "BYBIT"  # bybit.com
     COINBASE = "COINBASE"
+    DERIBIT = "DERIBIT"
     GATEIO = "GATEIO"
     BITSTAMP = "BITSTAMP"
 

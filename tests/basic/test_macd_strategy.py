@@ -1,4 +1,4 @@
-from vnpy.app.cta_strategy import BacktestingEngine
+from vnpy.app.cta_strategy.backtesting import BacktestingEngine
 from vnpy.app.cta_strategy.strategies.macd_strategy import MacdStrategy
 import vnpy.app.cta_strategy.backtesting as backtesting
 import vnpy.trader.constant as const
