@@ -5,8 +5,9 @@ from vnpy.app.cta_strategy.base import (
     INTERVAL_DELTA_MAP
 )
 from vnpy.trader.database import database_manager
-from vnpy.trader.object import BarData
+from vnpy.trader.object import BarData, FinanceData
 import pandas as pd
+from typing import Sequence
 
 
 def save_data_to_db(symbol, alias, count=5000):
@@ -74,8 +75,54 @@ def load_bar_data(symbol, alias, start_date: datetime = None, end_data: datetime
     return df
 
 
+# 指定日期的指数PE(市值加权)
+def get_index_pe_date(index_code, date):
+    auth('13277099856', '1221gzcC')
+    stocks = get_index_stocks(index_code, date)
+    q = query(valuation).filter(valuation.code.in_(stocks))
+    df = get_fundamentals(q, date)
+    df = df[df['pe_ratio'] > 0]
+    if len(df) > 0:
+        # pe = len(df)/sum([1/p if p>0 else 0 for p in df.pe_ratio])
+        # pe = df['pe_ratio'].size/(1/df['pe_ratio']).sum()
+        pe = df['circulating_market_cap'].sum() / (df['circulating_market_cap'] / df['pe_ratio']).sum()
+        return pe
+    else:
+        return float('NaN')
+
+
+# 指定日期的指数PB(市值加权)
+def get_index_pb_date(index_code, date):
+    auth('13277099856', '1221gzcC')
+    stocks = get_index_stocks(index_code, date)
+    q = query(valuation).filter(valuation.code.in_(stocks))
+    df = get_fundamentals(q, date)
+    df = df[df['pb_ratio'] > 0]
+    if len(df) > 0:
+        # pb = len(df)/sum([1/p if p>0 else 0 for p in df.pb_ratio])
+        # pb = df['pb_ratio'].size/(1/df['pb_ratio']).sum()
+        pb = df['circulating_market_cap'].sum() / (df['circulating_market_cap'] / df['pb_ratio']).sum()
+        return pb
+    else:
+        return float('NaN')
+
+
+def save_pe_pb(df, code):
+    """保存PE、PB数据"""
+    finance_datas = []
+    for index, row in df.iterrows():
+        dt = datetime(row['date'].year, row['date'].month, row['date'].day)
+        pe = get_index_pe_date(code, dt)
+        pb = get_index_pb_date(code, dt)
+        finance_datas.append(FinanceData(code, dt, pe, pb, 'normal'))
+    database_manager.save_finance_data(finance_datas)
+
+
 if __name__ == "__main__":
-    print(const.Exchange.get_exchange_by_alias('XSHG'))
+    # 保存pe\pb数据
+    df = load_bar_data('000300', 'XSHG', start_date=datetime(2018, 1, 1), end_data=datetime(2020, 4, 1))
+    save_pe_pb(df, '000300.XSHG')
+    # print(const.Exchange.get_exchange_by_alias('XSHG'))
     # save_data_to_db('000001', 'XSHG', 1)
     # load_bar_data('000001', 'XSHG', start_date=datetime(2010, 1, 1), end_data=datetime(2010, 5, 1))
     # save_data_to_db('159915', 'XSHE')  # 创业板
@@ -88,10 +135,7 @@ if __name__ == "__main__":
     # save_data_to_db('159928', 'XSHE')  # 消费ETF
     # save_data_to_db('501018', 'XSHG')  # 原油ETF
     # save_data_to_db('513100', 'XSHG')  # 纳斯达克ETF
-    save_data_to_db('159995', 'XSHE')  #
-    save_data_to_db('513050', 'XSHG')  #
-    save_data_to_db('512290', 'XSHG')  #
-    save_data_to_db('512660', 'XSHG')  #
+    # save_data_to_db('000300', 'XSHG')  #
 
     # df = df.append({'vol': 123}, ignore_index=True)
     # df = df.append({'vol': 123}, ignore_index=True)
@@ -112,4 +156,3 @@ if __name__ == "__main__":
     #         df = df.drop(0, axis=0)
     #     if emotion_p > 6:
     #         print(data.date.strftime("%Y-%m-%d") + '连续5天低于平均值')
-

@@ -17,7 +17,7 @@ from peewee import (
 )
 
 from vnpy.trader.constant import Exchange, Interval
-from vnpy.trader.object import BarData, TickData, TradeDate
+from vnpy.trader.object import BarData, TickData, TradeDate, FinanceData
 from vnpy.trader.utility import get_file_path
 from .database import BaseDatabaseManager, Driver
 
@@ -31,8 +31,8 @@ def init(driver: Driver, settings: dict):
     assert driver in init_funcs
 
     db = init_funcs[driver](settings)
-    bar, tick, trade_date = init_models(db, driver)
-    return SqlManager(bar, tick, trade_date)
+    bar, tick, trade_date, finance = init_models(db, driver)
+    return SqlManager(bar, tick, trade_date, finance)
 
 
 def init_sqlite(settings: dict):
@@ -373,17 +373,73 @@ def init_models(db: Database, driver: Driver):
                         DbTradeDatesData.insert_many(
                             c).on_conflict_replace().execute()
 
+    class DbFinanceData(ModelBase):
+
+        id = AutoField()
+        code: str = CharField()
+        datetime: datetime = DateTimeField()
+        pe: float = FloatField()
+        pb: float = FloatField()
+        type: str = CharField()
+
+        class Meta:
+            database = db
+            indexes = ((("code", "datetime"), True),)
+
+        @staticmethod
+        def from_finance(finance: FinanceData):
+            db_finance = DbFinanceData()
+
+            db_finance.code = finance.code
+            db_finance.datetime = finance.datetime
+            db_finance.pe = finance.pe
+            db_finance.pb = finance.pb
+            db_finance.type = finance.type
+            return db_finance
+
+        def to_finance(self):
+            finance = FinanceData(
+                code=self.code,
+                datetime=self.datetime,
+                pe=self.pe,
+                pb=self.pb,
+                type=self.type,
+            )
+            return finance
+
+        @staticmethod
+        def save_all(objs: List["FinanceData"]):
+            """
+            save a list of objects, update if exists.
+            """
+            dicts = [i.to_dict() for i in objs]
+            with db.atomic():
+                if driver is Driver.POSTGRESQL:
+                    for finance in dicts:
+                        DbFinanceData.insert(finance).on_conflict(
+                            update=finance,
+                            conflict_target=(
+                                DbFinanceData.code,
+                                DbFinanceData.datetime,
+                            ),
+                        ).execute()
+                else:
+                    for c in chunked(dicts, 50):
+                        DbFinanceData.insert_many(
+                            c).on_conflict_replace().execute()
+
     db.connect()
-    db.create_tables([DbBarData, DbTickData, DbTradeDatesData])
-    return DbBarData, DbTickData, DbTradeDatesData
+    db.create_tables([DbBarData, DbTickData, DbTradeDatesData, DbFinanceData])
+    return DbBarData, DbTickData, DbTradeDatesData, DbFinanceData
 
 
 class SqlManager(BaseDatabaseManager):
 
-    def __init__(self, class_bar: Type[Model], class_tick: Type[Model], class_trade_date: Type[Model]):
+    def __init__(self, class_bar: Type[Model], class_tick: Type[Model], class_trade_date: Type[Model], class_finance: Type[Model]):
         self.class_bar = class_bar
         self.class_tick = class_tick
         self.class_trade_date = class_trade_date
+        self.class_finance = class_finance
 
     def save_trade_date(
             self, datas: Sequence[TradeDate]):
@@ -400,6 +456,23 @@ class SqlManager(BaseDatabaseManager):
                 .order_by(self.class_trade_date.cal_date)
         )
         data = [db_trade_date.to_trade_date() for db_trade_date in s]
+        return data
+
+    def save_finance_data(self, datas: Sequence["FinanceData"]):
+        ds = [self.class_finance.from_finance(i) for i in datas]
+        self.class_finance.save_all(ds)
+
+    def load_finance_data(self, code: str, start: datetime, end: datetime) -> Sequence["FinanceData"]:
+        s = (
+            self.class_finance.select()
+                .where(
+                (self.class_finance.code == code)
+                & (self.class_finance.datetime >= start)
+                & (self.class_finance.datetime <= end)
+            ).order_by(self.class_finance.datetime)
+        )
+
+        data = [db_finance.to_finance() for db_finance in s]
         return data
 
     def load_bar_data(

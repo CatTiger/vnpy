@@ -245,7 +245,7 @@ class ContractData(BaseData):
     option_type: OptionType = None
     option_expiry: datetime = None
     option_portfolio: str = ""
-    option_index: str = ""          # for identifying options with same strike price
+    option_index: str = ""  # for identifying options with same strike price
 
     def __post_init__(self):
         """"""
@@ -343,3 +343,15 @@ class TradeDate:
     exchange: Exchange
     cal_date: str
     is_open: int
+
+
+@dataclass
+class FinanceData:
+    """
+    交易日期数据
+    """
+    code: str
+    datetime: datetime
+    pe: float
+    pb: float
+    type: str
