@@ -120,7 +120,7 @@ def save_pe_pb(df, code):
 
 if __name__ == "__main__":
     # 保存pe\pb数据
-    df = load_bar_data('000300', 'XSHG', start_date=datetime(2018, 1, 1), end_data=datetime(2020, 4, 1))
+    df = load_bar_data('000300', 'XSHG', start_date=datetime(2014, 1, 1), end_data=datetime(2016, 1, 10))
     save_pe_pb(df, '000300.XSHG')
     # print(const.Exchange.get_exchange_by_alias('XSHG'))
     # save_data_to_db('000001', 'XSHG', 1)

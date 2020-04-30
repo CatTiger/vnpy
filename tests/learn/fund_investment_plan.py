@@ -100,6 +100,98 @@ def model_1(df):
     # TODO: 增加复合年化利率计算
 
 
+def model2(symbol, alias, start_date, end_date):
+    """
+    定投模型2：
+    1、PE处于适中估值，不做任何操作，每月定投资金放入现金池
+    2、PE处于低估，持续定投
+    3、PE高于适中估值，卖出并且放入现金池中
+    """
+    # 获取交易日价格和金融数据
+    df = dp.load_bar_data(symbol, alias, start_date=start_date, end_data=end_date)
+    datas = database_manager.load_finance_data(symbol + '.' + alias, start_date, end_date)
+    df_finance = pd.DataFrame(columns=('code', 'datetime', 'pe', 'pb'))
+    for data in datas:
+        df_finance = df_finance.append({'code': data.code, 'datetime': data.datetime, 'pe': data.pe, 'pb': data.pb},
+                                       ignore_index=True)
+    if len(df) == len(df_finance):
+        df['pe'] = df_finance['pe'].copy()
+        df['pb'] = df_finance['pb'].copy()
+    df['date'] = pd.to_datetime(df['date'])  # 转换时间类型
+    df.set_index(['date'], inplace=True)
+    df.index.name = None  # 去掉索引列名
+    # 获取每个月第一个交易日
+    pre_year = 0
+    pre_month = 0
+    first_day = []
+    for index, row in df.iterrows():
+        if index.year != pre_year or index.month != pre_month:
+            first_day.append(index)
+        pre_year = index.year
+        pre_month = index.month
+    index_df = df.loc[first_day]
+    day_df = index_df.copy()
+    day_df['pct_change'] = day_df.close.pct_change()
+
+    # day_df = day_df[['close', 'pb', 'pe' 'pct_change']]
+    # print(day_df.head(10))
+    miden_estimation = (12.17798, 12.93906)
+    save_money = []  # 每月定存
+    back_money = []  # 回收资金
+    hold_money = []  # 持仓资金
+    base_money = 1000  # 定投基准
+    for i in range(len(day_df)):
+        pe = day_df['pe'][i]  # 估值位
+        print(pe)
+        if i == 0:  # 初始买入
+            # 1.计算买入金额
+            save_money.append(base_money)
+            # 2. 计算回收金额
+            back_money.append(0)
+            # 3. 计算持仓变化
+            hold_money.append(base_money)
+            continue
+
+        if pe <= miden_estimation[0]:  # 执行买入计算
+            # 1.计算买入金额
+            save_money.append(base_money)
+            # 2. 计算回收金额
+            back_money.append(0)
+            # 3. 计算持仓变化
+            hold_money.append(hold_money[-1] * (1 + day_df['pct_change'][i]) + base_money)
+        elif pe >= miden_estimation[-1]:  # 执行卖出计算
+            # 1. 计算买入金额
+            save_money.append(0)
+            # 2. 计算回收金额
+            back_money.append(base_money)
+            # 3. 计算持仓变化
+            hold_money.append(hold_money[-1] * (1 + day_df['pct_change'][i]) - base_money)
+        else:
+            # 1.计算买入金额
+            save_money.append(0)
+            # 2. 计算回收金额
+            back_money.append(0)
+            # 3. 计算持仓变化
+            hold_money.append(hold_money[-1] * (1 + day_df['pct_change'][i]))
+
+    day_df['save_money'] = save_money  # 定投金额
+    day_df['save_money_cumsum'] = day_df['save_money'].cumsum()  # 定投累计金额
+    day_df['hold_money'] = hold_money  # 持仓金额
+    day_df['back_money'] = back_money  # 回收金额
+    day_df['back_money_cumsum'] = day_df['back_money'].cumsum()  # 累计回收金额
+    day_df['total_money'] = day_df['hold_money'] + day_df['back_money_cumsum']  # 总资金
+    day_df['return_money'] = day_df['total_money'] - day_df['save_money_cumsum']  # 持续收益
+    day_df['return_rate'] = (day_df['total_money'] / day_df['save_money_cumsum']) - 1  # 持续收益率
+    day_df[['save_money_cumsum', 'total_money', 'back_money_cumsum', 'return_money']].plot(figsize=(14, 7))
+    plt.legend(['save_money_cumsum', 'total_money', 'back_money_cumsum', 'return_money'])
+    plt.show()
+
+    print('累计投入: {}元'.format(day_df['save_money_cumsum'][-1]))
+    print('累计收益: {}元'.format(day_df['return_money'][-1]))
+    print('最终本息累积: {}元'.format(day_df['total_money'][-1]))
+    print('绝对收益率为: {}%'.format((day_df['return_money'][-1] / day_df['save_money_cumsum'][-1]) * 100))
+
+
 # 指定日期的指数PE(市值加权)
 def get_index_pe_date(index_code, date):
     auth('13277099856', '1221gzcC')
@@ -147,6 +239,79 @@ def draw_pe_pb(code, start_date, end_date):
     plt.show()
 
 
+def draw_price_pe(symbol, alias, start_date, end_date):
+    """画出价格与pe关系"""
+    df = dp.load_bar_data(symbol, alias, start_date=start_date, end_data=end_date)
+    datas = database_manager.load_finance_data(symbol + '.' + alias, start_date, end_date)
+    df_finance = pd.DataFrame(columns=('code', 'datetime', 'pe', 'pb'))
+    for data in datas:
+        df_finance = df_finance.append({'code': data.code, 'datetime': data.datetime, 'pe': data.pe, 'pb': data.pb},
+                                       ignore_index=True)
+    if len(df) == len(df_finance):
+        df['pe'] = df_finance['pe'].copy()
+        df['pb'] = df_finance['pb'].copy()
+    df['date'] = pd.to_datetime(df['date'])
+    df.set_index(['date'], inplace=True)
+    _, axs = plt.subplots(ncols=2, figsize=(14, 5))
+    df[['close', 'pe']].plot(secondary_y=['pe'], ax=axs[0], alpha=.8)
+    df[['close', 'pb']].plot(secondary_y=['pb'], ax=axs[1], alpha=.8)
+    plt.show()
+
+
+def analyze_pe_pb_dis(symbol, alias, start_date, end_date):
+    """分析PE\PB分布"""
+    datas = database_manager.load_finance_data(symbol + '.' + alias, start_date, end_date)
+    df_finance = pd.DataFrame(columns=('code', 'datetime', 'pe', 'pb'))
+    for data in datas:
+        df_finance = df_finance.append({'code': data.code, 'datetime': data.datetime, 'pe': data.pe, 'pb': data.pb},
+                                       ignore_index=True)
+
+    _, axs = plt.subplots(nrows=2, ncols=2, figsize=(14, 7))
+    sns.distplot(df_finance.pe, ax=axs[0][0])
+    sns.boxplot(df_finance.pe, ax=axs[0][1])
+    sns.distplot(df_finance.pb, ax=axs[1][0])
+    sns.boxplot(df_finance.pb, ax=axs[1][1])
+    # 展示PE/PB关系
+    sns.jointplot(x='pb', y='pe', data=df_finance, height=7)
+    # 将PE分成十个分位，查看各个分位PE数量
+    pe_array = df_finance.pe.values
+    value_counts = pd.cut(pe_array, 10).value_counts()
+    print(value_counts)
+    low = value_counts[0:4].sum()
+    medin = value_counts[4:6].sum()
+    high = value_counts[6:10].sum()
+    print('比值({}：{}：{})'.format(low, medin, high))
+    plt.figure(figsize=(14, 4))
+    sns.barplot(x=np.arange(0, len(value_counts)), y=value_counts.values)
+    plt.show()
+
+
+def show_quantile(symbol, alias, start_date, end_date):
+    """展示分位区间"""
+    datas = database_manager.load_finance_data(symbol + '.' + alias, start_date, end_date)
+    df_finance = pd.DataFrame(columns=('code', 'datetime', 'pe', 'pb'))
+    for data in datas:
+        df_finance = df_finance.append({'code': data.code, 'datetime': data.datetime, 'pe': data.pe, 'pb': data.pb},
+                                       ignore_index=True)
+
+    _df = pd.DataFrame()
+    df = df_finance.copy()
+    df.index.name = None
+    _df['pe'] = df.pe
+    _df = _df
+    p_high = [_df.pe.quantile(i / 10) for i in [4, 5, 6]]
+    for p_h, i in zip(p_high, [4, 5, 6]):
+        _df[str(i / 10 * 100) + '%'] = p_h
+
+    print(_df.head(10))
+    _df['datetime'] = df_finance.datetime.copy()
+    _df['datetime'] = pd.to_datetime(_df['datetime'])  # 转换时间类型
+    _df.set_index(['datetime'], inplace=True)
+
+    _df.plot(figsize=(14, 7))
+    plt.show()
+
+
 if __name__ == "__main__":
     # 获取数据
     # df = dp.load_bar_data('000300', 'XSHG', start_date=dt.datetime(2020, 1, 1),
@@ -159,4 +324,8 @@ if __name__ == "__main__":
     # forecast_start, forecast_end = forecast_bull_time()
     # interval_show(df, forecast_start, forecast_end)
     # regplot_trend(df)
-    draw_pe_pb('000300.XSHG', dt.datetime(2020, 1, 1), dt.datetime(2020, 4, 1))
+    # draw_pe_pb('000300.XSHG', dt.datetime(2020, 1, 1), dt.datetime(2020, 4, 1))
+    # draw_price_pe('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
+    # analyze_pe_pb_dis('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
+    # show_quantile('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
+    model2('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))

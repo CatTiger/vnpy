@@ -37,8 +37,8 @@ dfcvs = DataFrame([
 
 if __name__ == "__main__":
     # 目标 1000w，，；求每周因存款金额
-    annual_rate = 1.12  # 预计年化12%
-    total_years = 1  # 定投年限：20
+    annual_rate = 1.20  # 预计年化12%
+    total_years = 20  # 定投年限：20
     weekly_amount = 2500  # 每月投入
     # 求周利率
     weekly_rate = math.pow(math.e, math.log(annual_rate) / 48)  # 按照每年48周，计算每周利率
