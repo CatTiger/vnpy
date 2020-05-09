@@ -50,24 +50,30 @@ def step3_close_pe(data, pe_percentile_blow=0.4, pe_percentile_upper=0.6, show=F
         plt.show()
 
 
-def step4_close_percentile_pe(data, show=False, show_pe_aviable=False):
-    """close与PE百分位之间关系"""
+def step4_close_percentile_pe(data, n=7, show=False):
+    """
+        close与PE百分位之间关系
+        不同时期之间的PE对比已经发生巨大变化，根据一个周期内百分位对比更有价值
+    """
     df = data.copy()
-    df['percentile'] = df['pe'].apply(lambda x: pd.Series(x).rank().iloc[-1] /
-                                                                  pd.Series(x).shape[0])
-    # dym_percentile = []
-    # for index, row in df.iterrows():
+    # 这里的计算按一年244个交易日计算
+    windows = int(n * 244)  # 将时间取整数
+    if len(data) < windows:
+        print('当前数据小于滚动窗口设置，无法完成滚动分为计算')
+        return
 
-
+    column = 'percentile_' + str(windows) + 'Y'
+    df[column] = df['pe'].rolling(windows).apply(lambda x: pd.Series(x).rank().iloc[-1] /
+                                                                   pd.Series(x).shape[0], raw=True)
     if show:
         fig, ax = plt.subplots(1, figsize=(16, 9))
-        df[['close', 'percentile']].plot(ax=ax, secondary_y=['percentile'], figsize=(16, 9), colormap='coolwarm')
+        df[['close', column]].plot(ax=ax, secondary_y=[column], figsize=(16, 9), colormap='coolwarm')
         plt.show()
 
 
 if __name__ == "__main__":
     # 选取沪深300开始分析
-    start_date = dt.datetime(2019, 1, 1)
+    start_date = dt.datetime(2006, 1, 1)
     end_date = dt.datetime(2020, 4, 1)
     df = dp.load_bar_data('000300', 'XSHG', start_date=start_date, end_data=end_date)
     df_finance = dp.load_finance_data('000300.XSHG', start_date=start_date, end_date=end_date)
