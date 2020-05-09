@@ -7,6 +7,10 @@ import seaborn as sns
 import vnpy.analyze.data.data_prepare as dp
 from jqdatasdk import *
 from vnpy.trader.database import database_manager
+from mpl_toolkits.axisartist.parasite_axes import HostAxes, ParasiteAxes
+import matplotlib.dates as dates
+from matplotlib import ticker
+import math
 
 
 def interval_show(df, forecast_start, forecast_end):
@@ -312,6 +316,81 @@ def show_quantile(symbol, alias, start_date, end_date):
     plt.show()
 
 
+def dym_quantile(n):
+    """
+        动态分位图
+        当前投资已5年内历史数据计算百分位，价格合适购入
+    """
+    # 这里的计算按一年244个交易日计算
+    windows = int(n * 244)  # 将时间取整数
+    start_date = dt.datetime(2006, 1, 1)
+    end_date = dt.datetime(2020, 4, 1)
+    df = dp.load_bar_data('000300', 'XSHG', start_date=start_date, end_data=end_date)
+    df_finance = dp.load_finance_data('000300.XSHG', start_date=start_date, end_date=end_date)
+    if len(df) == len(df_finance):
+        print('yes!!!, len:%s' % len(df))
+        df['pe'] = df_finance['pe']
+    df['quantile'] = df_finance['pe'].rolling(windows).apply(lambda x: pd.Series(x).rank().iloc[-1] /
+                                                                       pd.Series(x).shape[0], raw=True)
+    # df['date'] = pd.to_datetime(df['date'])  # 转换时间类型
+    # df.set_index(['date'], inplace=True)
+    # df.index.name = None  # 去掉索引列名
+    df.dropna(inplace=True)
+
+    # 画出适中估值区间
+
+    # plt.figure()
+    # 创建第一个画板
+    fig = plt.figure(figsize=(16, 9))
+
+    host = HostAxes(fig, [0.15, 0.1, 0.65, 0.8])
+    par1 = ParasiteAxes(host, sharex=host)
+    par2 = ParasiteAxes(host, sharex=host)
+    host.parasites.append(par1)
+    host.parasites.append(par2)
+
+    host.set_xlabel('Date')
+    host.set_ylabel('Close')
+    host.axis['right'].set_visible(False)
+
+    par1.axis['right'].set_visible(True)
+    par1.set_ylabel('%sY Rolling quantile' % n)
+    par1.axis['right'].major_ticklabels.set_visible(True)
+    par1.axis['right'].label.set_visible(True)
+
+    par2.set_ylabel('PE')
+    new_axisline = par2.get_grid_helper().new_fixed_axis  # "_grid_helper"与"get_grid_helper()"等价，可以代替
+    par2.axis['right2'] = new_axisline(loc='right', axes=par2, offset=(45, 0))
+
+    fig.add_axes(host)
+
+    df['date'] = pd.to_datetime(df['date'])
+    df['date'] = df['date'].apply(lambda x: dates.date2num(x))
+    p1, = host.plot(df['date'], df['close'], label="Close")
+    p2, = par1.plot(df['date'], df['quantile'], label="Quantile")
+    p3, = par2.plot(df['date'], df['pe'], label="PE")
+
+    host.legend()
+    # 轴名称，刻度值的颜色
+    host.axis['left'].label.set_color(p1.get_color())
+    host.xaxis.set_major_locator(ticker.MaxNLocator(math.floor(len(df) / 100)))
+    host.xaxis.set_major_formatter(dates.DateFormatter('%Y-%m'))
+    par1.axis['right'].label.set_color(p2.get_color())
+    par2.axis['right2'].label.set_color(p3.get_color())
+    par2.axis['right2'].major_ticklabels.set_color(p3.get_color())  # 刻度值颜色
+    par2.axis['right2'].set_axisline_style('-|>', size=1.5)  # 轴的形状色
+    par2.axis['right2'].line.set_color(p3.get_color())  # 轴的颜色
+    # ax.xaxis.set_major_formatter(dates.DateFormatter('%Y-%m-%d'))
+
+    # df[['quantile', 'close']].plot(secondary_y=['quantile'], figsize=(14, 10), alpha=.8)
+    # plt.fill_between(df.index, y1=0.4, y2=0.6, color='blue', alpha=0.7)
+    # plt.fill_between(df.index, y1=0.8, y2=1, color='red', alpha=0.7)
+    # plt.fill_between(df.index, y1=0.0, y2=0.2, color='green', alpha=0.7)
+    # plt.annotate('reasonable zone', (df.index[-1], 0.5))
+    # 画出固定PE与收盘价的曲线
+    plt.show()
+
+
 if __name__ == "__main__":
     # 获取数据
     # df = dp.load_bar_data('000300', 'XSHG', start_date=dt.datetime(2020, 1, 1),
@@ -328,4 +407,5 @@ if __name__ == "__main__":
     # draw_price_pe('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
     # analyze_pe_pb_dis('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
     # show_quantile('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
-    model2('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
+    # model2('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
+    dym_quantile(7.5)
