@@ -28,3 +28,12 @@ class TestDict(unittest.TestCase):
         df['invest'] = invest
         result = df.groupby('date').sum()
         print(result)
+
+    def test_return(self):
+        # 预期年化收益率=分红率/PE+(1-分红率)*PB/PE，分红率统一设定为25%
+        # ROE * （1-d）+ 1/PE *d ,d为分红率
+        # PE 45.0994  PB 5.68441
+        hong = 0.25
+        pe = 45.0994
+        pb = 5.68441
+        print(hong/pe + 0.75*pb/pe)

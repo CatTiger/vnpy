@@ -29,4 +29,22 @@ class TestDict(unittest.TestCase):
         start_date = dt.datetime(2006, 1, 1)
         end_date = dt.datetime(2020, 4, 1)
         mean_reversion_cy = MeanReversion(start_date, end_date, '399006.XSHE', 'broad')
-        mean_reversion_cy.close_pe_relation(show_pe_percentile=True)
+        mean_reversion_cy.close_finance_relation(show_pe_percentile=True)
+
+    def test_close_pb_relation(self):
+        start_date = dt.datetime(2006, 1, 1)
+        end_date = dt.datetime(2020, 4, 1)
+        mean_reversion = MeanReversion(start_date, end_date, '000300.XSHG', 'broad')
+        mean_reversion.close_finance_relation(show_pb_border_line=True, column='pb')
+
+    def test_append_expected_profit(self):
+        start_date = dt.datetime(2006, 1, 1)
+        # end_date = dt.datetime(2020, 4, 1)
+        # mean_reversion = MeanReversion(start_date, end_date, '399006.XSHE', 'broad')
+        # mean_reversion.append_expected_profit(show=True)
+
+    def test_append_pos(self):
+        start_date = dt.datetime(2006, 1, 1)
+        end_date = dt.datetime(2020, 4, 1)
+        mean_reversion = MeanReversion(start_date, end_date, '000300.XSHG', 'broad')
+        mean_reversion.append_pos(show=True)
