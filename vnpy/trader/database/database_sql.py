@@ -380,6 +380,9 @@ def init_models(db: Database, driver: Driver):
         datetime: datetime = DateTimeField()
         pe: float = FloatField()
         pb: float = FloatField()
+        pe_mid: float = FloatField()
+        pb_mid: float = FloatField()
+        extra_json: str = CharField()
         type: str = CharField()
 
         class Meta:
@@ -394,6 +397,9 @@ def init_models(db: Database, driver: Driver):
             db_finance.datetime = finance.datetime
             db_finance.pe = finance.pe
             db_finance.pb = finance.pb
+            db_finance.pe_mid = finance.pe_mid
+            db_finance.pb_mid = finance.pb_mid
+            db_finance.extra_json = finance.extra_json
             db_finance.type = finance.type
             return db_finance
 
@@ -403,6 +409,9 @@ def init_models(db: Database, driver: Driver):
                 datetime=self.datetime,
                 pe=self.pe,
                 pb=self.pb,
+                pe_mid=self.pe_mid,
+                pb_mid=self.pb_mid,
+                extra_json=self.extra_json,
                 type=self.type,
             )
             return finance

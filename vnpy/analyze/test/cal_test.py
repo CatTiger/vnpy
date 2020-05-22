@@ -37,3 +37,8 @@ class TestDict(unittest.TestCase):
         pe = 45.0994
         pb = 5.68441
         print(hong/pe + 0.75*pb/pe)
+
+    def test_pos(self):
+        # abs(2 - 10 * value_total) ** 1.618
+        print(abs(2 - 10 * 0.15) ** 1.618)
+        print(1.9 ** 1.618)

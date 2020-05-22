@@ -120,10 +120,12 @@ def save_pe_pb(df, code):
 
 def load_finance_data(code, start_date: datetime = None, end_date: datetime = None):
     datas = database_manager.load_finance_data(code, start_date, end_date)
-    df_finance = pd.DataFrame(columns=('code', 'datetime', 'pe', 'pb'))
+    df_finance = pd.DataFrame(columns=('code', 'datetime', 'pe', 'pb', 'pe_mid', 'pb_mid'))
     for data in datas:
-        df_finance = df_finance.append({'code': data.code, 'datetime': data.datetime, 'pe': data.pe, 'pb': data.pb},
-                                       ignore_index=True)
+        df_finance = df_finance.append(
+            {'code': data.code, 'datetime': data.datetime, 'pe': data.pe, 'pb': data.pb, 'pe_mid': data.pe_mid,
+             'pb_mid': data.pb_mid},
+            ignore_index=True)
     return df_finance
 
 
@@ -156,10 +158,10 @@ if __name__ == "__main__":
     # 大盘bar data数据
     # save_data_to_db('399001', 'XSHE')
     # save_data_to_db('399006', 'XSHE')
-    # save_data_to_db('000300', 'XSHG')
+    # save_data_to_db('000300', 'XSHG', 100)
     # save_data_to_db('399005', 'XSHE')
     # save_data_to_db('000016', 'XSHG')
-    # save_data_to_db('000001', 'XSHG')
+    save_data_to_db('000001', 'XSHG', 100)
 
     # df = df.append({'vol': 123}, ignore_index=True)
     # df = df.append({'vol': 123}, ignore_index=True)
@@ -181,8 +183,8 @@ if __name__ == "__main__":
     #     if emotion_p > 6:
     #         print(data.date.strftime("%Y-%m-%d") + '连续5天低于平均值')
 
-    auth('13277099856', '1221gzcC')
-    data = get_bars('000001.XSHG', 500, unit='60m',
-                    fields=['date', 'open', 'high', 'low', 'close', 'volume'],
-                    include_now=False, end_dt=None, fq_ref_date=None, df=True)
-    print(data.head())
+    # auth('13277099856', '1221gzcC')
+    # data = get_bars('000001.XSHG', 500, unit='60m',
+    #                 fields=['date', 'open', 'high', 'low', 'close', 'volume'],
+    #                 include_now=False, end_dt=None, fq_ref_date=None, df=True)
+    # print(data.head())

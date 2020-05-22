@@ -354,4 +354,7 @@ class FinanceData:
     datetime: datetime
     pe: float
     pb: float
+    pe_mid: float
+    pb_mid: float
+    extra_json: str
     type: str
