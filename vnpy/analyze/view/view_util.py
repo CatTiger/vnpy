@@ -52,5 +52,4 @@ def macd(df, n_fast=12, n_slow=26, diff_dea=9):
     df_macd['DIFF'] = diff
     df_macd['DEA'] = dea
     df_macd['MACD'] = macd
-    print(df_macd.tail())
     return df_macd
