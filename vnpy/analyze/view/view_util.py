@@ -34,20 +34,23 @@ def relative_strength_index(df, n):
     return df
 
 
-def macd(df, n_fast, n_slow):
+def macd(df, n_fast=12, n_slow=26, diff_dea=9):
     """Calculate MACD, MACD Signal and MACD difference
 
     :param df: pandas.DataFrame
-    :param n_fast:
-    :param n_slow:
+    :param n_fast: 12
+    :param n_slow: 26
+    :param diff_dea: 9
     :return: pandas.DataFrame
     """
-    EMAfast = pd.Series(df['close'].ewm(span=n_fast, min_periods=n_slow).mean())
-    EMAslow = pd.Series(df['close'].ewm(span=n_slow, min_periods=n_slow).mean())
-    MACD = pd.Series(EMAfast - EMAslow, name='MACD_' + str(n_fast) + '_' + str(n_slow))
-    MACDsign = pd.Series(MACD.ewm(span=9, min_periods=9).mean(), name='MACDsign_' + str(n_fast) + '_' + str(n_slow))
-    MACDdiff = pd.Series(MACD - MACDsign, name='MACDdiff_' + str(n_fast) + '_' + str(n_slow))
-    df = df.join(MACD)
-    df = df.join(MACDsign)
-    df = df.join(MACDdiff)
-    return df
+    df_macd = pd.DataFrame(columns=('DIFF', 'DEA', 'MACD'))
+    fast_ema = pd.Series(df['close'].ewm(span=n_fast, min_periods=n_fast).mean())
+    slow_ema = pd.Series(df['close'].ewm(span=n_slow, min_periods=n_slow).mean())
+    diff = pd.Series(fast_ema - slow_ema, name='DIFF')
+    dea = pd.Series(diff.ewm(span=diff_dea, min_periods=diff_dea).mean(), name='DEA')
+    macd = pd.Series(2 * (diff - dea), name='MACD')
+    df_macd['DIFF'] = diff
+    df_macd['DEA'] = dea
+    df_macd['MACD'] = macd
+    print(df_macd.tail())
+    return df_macd

@@ -112,47 +112,54 @@ class SupportResistanceLine():
         if not isinstance(data, pd.Series):
             raise TypeError('data必须为pd.Series格式')
 
-        self.y = data.reset_index(drop=True)
-        self.y.name = 'y'
-        self.df = pd.DataFrame({'y': self.y})
-        self.df.index.name = 'x'
-        self.x = self.df.reset_index()['x']
-
+        self.y = data.copy()
+        self.x = np.arange(0, len(data))
+        df = pd.DataFrame(columns=['x', 'y'])
+        df.x = self.x
+        df.y = self.y
+        df.set_index(['x'], inplace=True)
+        df.index.name = None  # 去掉索引列名
+        self.df = df
         self.kind = kind
         self.dot_color = 'g' if kind == 'support' else 'r'
 
-    def find_best_poly(self, show=False):
-        df = self.df.copy()
-
+    def find_best_poly(self, poly_min=1, poly_max=100, show=False):
+        """
+        寻找最佳拟合次数
+        :param poly_min: 最小拟合次数
+        :param poly_max: 最大拟合次数
+        :param show: 是否展示
+        :return:
+        """
+        df = self.df
         rolling_window = int(len(self.y) / 30)
         df['y_roll_mean'] = df['y'].rolling(rolling_window, min_periods=1).mean()
 
         # 度量原始y值和均线y_roll_mean的距离distance_mean
         distance_mean = np.sqrt(metrics.mean_squared_error(df.y, df.y_roll_mean))
 
-        poly = int(len(self.y) / 40)
-        while poly < 100:
+        poly = poly_min
+        while poly < poly_max:
             # 迭代计算1-100poly次regress_xy_polynomial的拟合曲线y_fit
             p = np.polynomial.Chebyshev.fit(self.x, self.y, poly)
             y_fit = p(self.x)
-            df[f'poly_{poly}'] = y_fit
-            # 使用metrics_func方法度量原始y值和拟合回归的趋势曲线y_fit的距离distance_fit
             distance_fit = np.sqrt(metrics.mean_squared_error(df.y, y_fit))
+            # 使用metrics_func方法度量原始y值和拟合回归的趋势曲线y_fit的距离distance_fit
             if distance_fit <= distance_mean * 0.6:
                 # 如果distance_fit <= distance_mean* 0.6即代表拟合曲线可以比较完美的代表原始曲线y的走势，停止迭代
+                df[f'poly_{poly}'] = y_fit
                 break
             poly += 1
-
         self.best_poly = poly
         self.p = p
         self.df['best_poly'] = y_fit
-
         if show:
             fig, ax = plt.subplots(1, figsize=(16, 9))
             df.plot(ax=ax, figsize=(16, 9), colormap='coolwarm')
             plt.show()
 
     def find_extreme_pos(self, show=False):
+        """寻找极值点"""
         p = self.p
 
         # 求导函数的根
@@ -177,7 +184,6 @@ class SupportResistanceLine():
             self.df.plot(ax=ax)
             ax.scatter(self.min_extreme_pos, [p(_) for _ in self.min_extreme_pos], s=50, c='g')
             ax.scatter(self.max_extreme_pos, [p(_) for _ in self.max_extreme_pos], s=50, c='r')
-
             plt.show()
 
     # 拟合极值点附近的真实极值
@@ -227,7 +233,7 @@ class SupportResistanceLine():
         support_resistance_pos = list(set(support_resistance_pos))
 
         support_resistance_sr = pd.Series(
-            self.y.loc[support_resistance_pos],
+            self.df.y.loc[support_resistance_pos],
             index=support_resistance_pos
         ).sort_index()
 
@@ -521,11 +527,15 @@ class SupportResistanceLine():
         if is_new:
             plt.show()
 
-    def find_support_points(self):
-        self.find_best_poly(False)
-        self.find_extreme_pos(False)
-        self.find_real_extreme_points(False)
-        return self.support_resistance_df.y.values
+    def find_points(self):
+        """
+        寻找所有的支撑点\阻力点
+        :return:
+        """
+        self.find_best_poly(show=False)
+        self.find_extreme_pos(show=False)
+        self.find_real_extreme_points(show=False)
+        return self.cluster_nearest_support_resistance_pos(show=False, inplace=True)
 
 
 def test_support_line(datas):
@@ -552,8 +562,12 @@ def test_support_line(datas):
 
 
 if __name__ == '__main__':
-    data = dp.load_bar_data('510300', 'XSHG', start_date=dt.datetime(2018, 4, 1), end_data=dt.datetime(2019, 4, 16))
+    df = dp.load_bar_data('000001', 'XSHG', start_date=dt.datetime(2019, 5, 1), end_data=dt.datetime(2020, 5, 1))
     # test_support_line(data)
-    support_line = SupportResistanceLine(data['close'], 'support')
+    support_line = SupportResistanceLine(df.close, 'support')
     # support_line.show_both(show_step=True)
     support_line.show_both(show_step=True)
+    # support_line.find_best_poly(show=True)
+    # support_line.find_extreme_pos(show=True)
+    # support_line.find_real_extreme_points(show=True)
+    # support_line.cluster_nearest_support_resistance_pos(show=True)

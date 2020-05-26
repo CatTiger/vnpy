@@ -161,7 +161,7 @@ if __name__ == "__main__":
     # save_data_to_db('000300', 'XSHG', 100)
     # save_data_to_db('399005', 'XSHE')
     # save_data_to_db('000016', 'XSHG')
-    save_data_to_db('000001', 'XSHG', 100)
+    save_data_to_db('000001', 'XSHG', 20)
 
     # df = df.append({'vol': 123}, ignore_index=True)
     # df = df.append({'vol': 123}, ignore_index=True)

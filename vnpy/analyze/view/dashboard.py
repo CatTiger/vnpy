@@ -114,18 +114,63 @@ def dashboard_3():
     """
 
 
+def relation_view(index_code, etf_code, days=220):
+    """
+    :param index_code: 指数code
+    :param etf_code: etfcode
+    :param days: 对比时长
+    查看相关性
+    :return:
+    """
+    auth('13277099856', '1221gzcC')
+    df = get_bars(index_code, days, unit='1d',
+                  fields=['date', 'close'],
+                  include_now=False, end_dt=None, fq_ref_date=None, df=True)
+    df_etf = get_bars(etf_code, days, unit='1d',
+                      fields=['date', 'close'],
+                      include_now=False, end_dt=None, fq_ref_date=None, df=True)
+    df['close-etf'] = df_etf['close']
+    sns.jointplot(df['close'], df['close-etf'], kind='reg', height=9)
+    fig, ax = plt.subplots(1, figsize=(16, 9))
+    df[['close', 'close-etf']].plot(ax=ax, secondary_y=['close-etf'], figsize=(16, 9))
+    print(df[['close', 'close-etf']].corr())
+    plt.show()
+
+
 if __name__ == "__main__":
     """
     上证指数（1991-12-31，SH:000001）('000001', 'XSHG')
     深证成指（1994-12-30，SZ:399001）('399001', 'XSHE')
     
     创业板指（2010-6-30，SZ:399006）('399006', 'XSHE')
-    沪深300(2005-2-18, SH:000300)('000300', 'XSHG')
+    沪深300(2005-2-18, SH:000300)('000300', 'XSHG') （大盘股）
     
     中小板指(2006-1-25，SZ:399005)('399005', 'XSHE')
     上证50(2004-1-30，SH:000016)('000016', 'XSHG')
+    
+    中证500 000905.XSHG 159922 （中小盘） 
+    
+    300医药 000913.XSHG 512010
+    中证消费 000932.XSHG 159928
+    国证证券行业指数 399437.XSHE 512880
+    中证军工 399967.XSHE 512660
+    中证银行指数 399986.XSHE 512800
+    180金融 000018.XSHG 510230 (一般)
+    国证新能源汽车指数 399417.XSHE 515030 （不匹配）
+    红利指数 000015.XSHG 510880
+    
+    国证通信 399389.XSHE 515880（不匹配）
+    科技100 399339.XSHE 515000（不匹配）
     """
     # 准备数据
-    start_date = dt.datetime(2006, 1, 1)
-    end_date = dt.datetime(2020, 5, 1)
-    dashboard_0(start_date, end_date)
+    # start_date = dt.datetime(2006, 1, 1)
+    # end_date = dt.datetime(2020, 5, 1)
+    # dashboard_0(start_date, end_date)
+    # relation_view('000913.XSHG', '512010.XSHG')
+    # relation_view('000932.XSHG', '159928.XSHE')
+    # relation_view('399437.XSHE', '512880.XSHG')
+    # relation_view('399967.XSHE', '512660.XSHG')
+    # relation_view('399986.XSHE', '512800.XSHG')
+    # relation_view('000018.XSHG', '510230.XSHG')
+    # relation_view('399417.XSHE', '515030.XSHG', 50)
+    # relation_view('000015.XSHG', '510880.XSHG')
