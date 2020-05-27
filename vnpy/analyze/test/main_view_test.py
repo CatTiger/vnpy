@@ -23,16 +23,16 @@ class TestDict(unittest.TestCase):
         mv.draw_main()
 
     def test_show_all(self):
-        # 沪深300为标的
+        symbol, alias = '000016', 'XSHG'
         now = dt.datetime(2020, 5, 26)
         start_date = now - dt.timedelta(days=365)
         # 1、最近1年的k线数据
-        df = dp.load_bar_data('000300', 'XSHG', start_date=start_date, end_data=now)
+        df = dp.load_bar_data(symbol, alias, start_date=start_date, end_data=now)
         mv = MainView(df)
         mv.draw_main()
         # 2、历史数据分析
         start_date = dt.datetime(2010, 1, 1)
-        mean_reversion = MeanReversion(start_date, now, '000300.XSHG', 'broad')
+        mean_reversion = MeanReversion(start_date, now, symbol + "." + alias, 'broad')
         # 财务相关
         mean_reversion.append_expected_profit()
         mean_reversion.append_finance(n=7)

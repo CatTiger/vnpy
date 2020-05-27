@@ -83,12 +83,12 @@ class TestDict(unittest.TestCase):
         # mean_reversion.draw_attribution_analyze()
 
     def test_poly(self):
+        # start_date = dt.datetime(2005, 1, 1)
+        # end_date = dt.datetime(2020, 5, 22)
+        # mean_reversion = MeanReversion(start_date, end_date, '000001.XSHG', 'broad', load_finance=False)
+        # mean_reversion.append_poly_line(show=True)
         start_date = dt.datetime(2005, 1, 1)
-        end_date = dt.datetime(2020, 5, 22)
-        mean_reversion = MeanReversion(start_date, end_date, '000001.XSHG', 'broad', load_finance=False)
-        mean_reversion.append_poly_line(show=True)
-        start_date = dt.datetime(2005, 1, 1)
-        end_date = dt.datetime(2020, 5, 22)
+        end_date = dt.datetime(2020, 5, 1)
         mean_reversion = MeanReversion(start_date, end_date, '000300.XSHG', 'broad', load_finance=False)
         mean_reversion.append_poly_line(show=True)
 

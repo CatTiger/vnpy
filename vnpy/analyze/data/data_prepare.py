@@ -161,7 +161,7 @@ if __name__ == "__main__":
     # save_data_to_db('000300', 'XSHG', 100)
     # save_data_to_db('399005', 'XSHE')
     # save_data_to_db('000016', 'XSHG')
-    save_data_to_db('000001', 'XSHG', 20)
+    # save_data_to_db('000001', 'XSHG', 20)
 
     # df = df.append({'vol': 123}, ignore_index=True)
     # df = df.append({'vol': 123}, ignore_index=True)
@@ -188,3 +188,7 @@ if __name__ == "__main__":
     #                 fields=['date', 'open', 'high', 'low', 'close', 'volume'],
     #                 include_now=False, end_dt=None, fq_ref_date=None, df=True)
     # print(data.head())
+
+    save_data_to_db('399006', 'XSHE')
+    save_data_to_db('000016', 'XSHG')
+    save_data_to_db('000905', 'XSHG')

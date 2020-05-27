@@ -14,7 +14,10 @@ class DataSource:
         :param mode: 默认为本地模式，mode: remote远程模式
         """
         if mode == 'remote':
-            auth('13277099856', '1221gzcC')
+            # 15802720411/Mm123456789
+            # auth('13277099856', '1221gzcC')
+            auth('15802720411', 'Mm123456789')
+
 
     def get_index_stock(self, date: datetime, index_code: str):
         """

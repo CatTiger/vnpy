@@ -24,9 +24,23 @@ class TestDataSource(unittest.TestCase):
         # 初始化沪深300所有数据
         ds = DataSource(mode='remote')
         bar_datas = database_manager.load_bar_data('000300', const.Exchange.get_exchange_by_alias('XSHG'),
-                                                   const.Interval.DAILY, dt.datetime(2010, 1, 1),
-                                                   dt.datetime(2011, 1, 10))
+                                                   const.Interval.DAILY, dt.datetime(2005, 1, 1),
+                                                   dt.datetime(2006, 1, 10))
         trade_dates = []
         for bar in bar_datas:
             trade_dates.append(bar.datetime)
         ds.save_index_finance(trade_dates, '000300.XSHG')
+
+    def test_init(self):
+        # save_data_to_db('399006', 'XSHE')
+        # save_data_to_db('000016', 'XSHG')
+        # save_data_to_db('000905', 'XSHG')
+        symbol, alias = '000905', 'XSHG'
+        ds = DataSource(mode='remote')
+        bar_datas = database_manager.load_bar_data(symbol, const.Exchange.get_exchange_by_alias(alias),
+                                                   const.Interval.DAILY, dt.datetime(2010, 1, 1),
+                                                   dt.datetime(2020, 5, 27))
+        trade_dates = []
+        for bar in bar_datas:
+            trade_dates.append(bar.datetime)
+        ds.save_index_finance(trade_dates, symbol + '.' + alias)

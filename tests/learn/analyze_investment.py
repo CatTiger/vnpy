@@ -174,8 +174,8 @@ def trade_model(data, column='percentile_7Y', show=False, show_annual_invest=Tru
 
 if __name__ == "__main__":
     # 选取沪深300开始分析
-    start_date = dt.datetime(2006, 1, 1)
-    end_date = dt.datetime(2020, 4, 1)
+    start_date = dt.datetime(2005, 5, 1)
+    end_date = dt.datetime(2020, 5, 1)
     df = dp.load_bar_data('000300', 'XSHG', start_date=start_date, end_data=end_date)
     df_finance = dp.load_finance_data('000300.XSHG', start_date=start_date, end_date=end_date)
     if len(df) == len(df_finance):
@@ -186,8 +186,8 @@ if __name__ == "__main__":
     df['date'] = pd.to_datetime(df['date'])  # 转换时间类型
     df.set_index(['date'], inplace=True)
     df.index.name = None  # 去掉索引列名
-    step1_draw_close(df, show=True)
-    step2_pe_pb(df, show=True)  # PE\PB相关系数接近1，选取其中一个即可
-    step3_close_pe(df, show=True)  # 拉长时间周期看来,无法固定确定的PE低估值，考虑使用PE历史百分位进行
+    # step1_draw_close(df, show=True)
+    # step2_pe_pb(df, show=True)  # PE\PB相关系数接近1，选取其中一个即可
+    # step3_close_pe(df, show=True)  # 拉长时间周期看来,无法固定确定的PE低估值，考虑使用PE历史百分位进行
     df_q = step4_close_percentile_pe(df, show=True, show_p_hist=True)
     trade_model(df_q, show=True, show_annual_invest=True)

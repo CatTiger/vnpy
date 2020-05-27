@@ -393,19 +393,19 @@ def dym_quantile(n):
 
 if __name__ == "__main__":
     # 获取数据
-    # df = dp.load_bar_data('000300', 'XSHG', start_date=dt.datetime(2020, 1, 1),
-    #                       end_data=dt.datetime(2020, 4, 1))
-    # df['dt'] = df['date'].copy()
-    # df['date'] = pd.to_datetime(df['date'])  # 转换时间类型
-    # df.set_index(['date'], inplace=True)
+    df = dp.load_bar_data('000300', 'XSHG', start_date=dt.datetime(2005, 1, 1),
+                          end_data=dt.datetime(2020, 5, 1))
+    df['dt'] = df['date'].copy()
+    df['date'] = pd.to_datetime(df['date'])  # 转换时间类型
+    df.set_index(['date'], inplace=True)
     # draw_pe_pb(df, '000300.XSHG')
     # model_1(df)
-    # forecast_start, forecast_end = forecast_bull_time()
-    # interval_show(df, forecast_start, forecast_end)
-    # regplot_trend(df)
+    forecast_start, forecast_end = forecast_bull_time()
+    interval_show(df, forecast_start, forecast_end)
+    regplot_trend(df)
     # draw_pe_pb('000300.XSHG', dt.datetime(2020, 1, 1), dt.datetime(2020, 4, 1))
     # draw_price_pe('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
     # analyze_pe_pb_dis('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
     # show_quantile('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
     # model2('000300', 'XSHG', dt.datetime(2014, 1, 2), dt.datetime(2020, 4, 1))
-    dym_quantile(7.5)
+    # dym_quantile(7.5)
