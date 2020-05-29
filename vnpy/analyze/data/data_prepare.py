@@ -189,6 +189,20 @@ if __name__ == "__main__":
     #                 include_now=False, end_dt=None, fq_ref_date=None, df=True)
     # print(data.head())
 
-    save_data_to_db('399006', 'XSHE')
-    save_data_to_db('000016', 'XSHG')
-    save_data_to_db('000905', 'XSHG')
+    # 宽基
+    # save_data_to_db('000300', 'XSHG')  # 沪深300
+    # save_data_to_db('399006', 'XSHE')  # 创业板指
+    # save_data_to_db('000016', 'XSHG')  # 上证50
+    # save_data_to_db('000905', 'XSHG')  # 中证500
+    # 行业
+    # save_data_to_db('000913', 'XSHG')  # 300医药 2007-07-02
+    # save_data_to_db('000932', 'XSHG')  # 中证消费 2009-07-03
+    # save_data_to_db('399437', 'XSHE')  # 国证证券行业指数 2014-12-30
+    # save_data_to_db('399967', 'XSHE')  # 中证军工 2013-12-26
+    # save_data_to_db('399986', 'XSHE')  # 中证银行指数 2014-12-30
+    # save_data_to_db('000015', 'XSHG')  # 红利指数 2005-01-04
+    # save_data_to_db('000018', 'XSHG')  # 180金融 2007-12-10
+
+    # save_data_to_db('000012', 'XSHG')  # 国债指数 2003-01-02
+
+    save_data_to_db('399610', 'XSHE')  # TMT50

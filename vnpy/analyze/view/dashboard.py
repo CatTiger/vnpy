@@ -165,6 +165,15 @@ if __name__ == "__main__":
     红利指数 000015.XSHG 510880
     180金融 000018.XSHG 510230 (一般)
     
+    国债指数 000012.XSHG 511010 0.971
+    TMT50 399610.XSHE 159909 0.999
+    180治理 000021.XSHG 510010 0.955
+    上证央企 000042.XSHG 510060 0.986
+    上证金融 000038.XSHG 510650 0.996
+    300金融 000914.XSHG 159933 0.917
+    180价值 000029.XSHG 510030 0.848
+    
+    央视创新 399551.XSHE 515900 （不匹配）
     国证新能源汽车指数 399417.XSHE 515030 （不匹配）
     国证通信 399389.XSHE 515880（不匹配）
     科技100 399339.XSHE 515000（不匹配）
@@ -181,3 +190,12 @@ if __name__ == "__main__":
     # relation_view('000018.XSHG', '510230.XSHG')
     # relation_view('399417.XSHE', '515030.XSHG', 50)
     # relation_view('000015.XSHG', '510880.XSHG')
+    # relation_view('000012.XSHG', '511010.XSHG')
+    # relation_view('000021.XSHG', '510010.XSHG')
+    # relation_view('000029.XSHG', '510030.XSHG')
+    # relation_view('000042.XSHG', '510060.XSHG')
+    # relation_view('399610.XSHE', '159909.XSHE')
+    # relation_view('000038.XSHG', '510650.XSHG')
+    # relation_view('399551.XSHE', '515900.XSHG', 50)
+    relation_view('000925.XSHG', '512750.XSHG')
+

@@ -22,9 +22,19 @@ class TestDict(unittest.TestCase):
         mv = MainView(df)
         mv.draw_main()
 
+    def test_show_price_only(self):
+        symbol, alias = '399610', 'XSHE'
+        now = dt.datetime(2020, 5, 28)
+        start_date = dt.datetime(2010, 1, 1)
+        mean_reversion = MeanReversion(start_date, now, symbol + "." + alias, 'broad', load_finance=False)
+        mean_reversion.append_poly_line(show=True)
+
     def test_show_all(self):
-        symbol, alias = '000016', 'XSHG'
-        now = dt.datetime(2020, 5, 26)
+        # symbol, alias = '000016', 'XSHG'
+        # symbol, alias = '000913', 'XSHG'
+        # symbol, alias = '000932', 'XSHG'
+        symbol, alias = '399006', 'XSHE'
+        now = dt.datetime(2020, 5, 28)
         start_date = now - dt.timedelta(days=365)
         # 1、最近1年的k线数据
         df = dp.load_bar_data(symbol, alias, start_date=start_date, end_data=now)
