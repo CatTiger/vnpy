@@ -1,6 +1,6 @@
 import unittest
 from vnpy.analyze.util.data_source import DataSource
-import datetime as dt
+from datetime import datetime, timedelta
 import vnpy.trader.constant as const
 from vnpy.trader.database import database_manager
 import vnpy.analyze.data.data_prepare as dp
@@ -23,12 +23,15 @@ class TestDataSource(unittest.TestCase):
     def test_save_finance(self):
         # 初始化沪深300所有数据
         ds = DataSource(mode='remote')
-        bar_datas = database_manager.load_bar_data('000300', const.Exchange.get_exchange_by_alias('XSHG'),
-                                                   const.Interval.DAILY, dt.datetime(2005, 1, 1),
-                                                   dt.datetime(2006, 1, 10))
-        trade_dates = []
-        for bar in bar_datas:
-            trade_dates.append(bar.datetime)
+        # bar_datas = database_manager.load_bar_data('000300', const.Exchange.get_exchange_by_alias('XSHG'),
+        #                                            const.Interval.DAILY, dt.datetime(2005, 1, 1),
+        #                                            dt.datetime(2006, 1, 10))
+        # trade_dates = []
+        # for bar in bar_datas:
+        #     trade_dates.append(bar.datetime)
+        start_date = datetime.today() - timedelta(days=2)
+        trade_dates = [(start_date + timedelta(days=i)).replace(hour=0, minute=0, second=0, microsecond=0) for i in
+                       range(1, 3)]
         ds.save_index_finance(trade_dates, '000300.XSHG')
 
     def test_init(self):
@@ -52,8 +55,8 @@ class TestDataSource(unittest.TestCase):
         symbol, alias = '000905', 'XSHG'
         ds = DataSource(mode='remote')
         bar_datas = database_manager.load_bar_data(symbol, const.Exchange.get_exchange_by_alias(alias),
-                                                   const.Interval.DAILY, dt.datetime(2010, 1, 1),
-                                                   dt.datetime(2011, 1, 10))
+                                                   const.Interval.DAILY, datetime(2010, 1, 1),
+                                                   datetime(2011, 1, 10))
         trade_dates = []
         for bar in bar_datas:
             trade_dates.append(bar.datetime)
@@ -66,7 +69,7 @@ class TestDataSource(unittest.TestCase):
         recent_days = 22
         dp.save_data_to_db(symbol, alias, recent_days)
         ds = DataSource(mode='remote')
-        now = dt.datetime.today()
+        now = datetime.today()
         bar_datas = database_manager.load_bar_data(symbol, const.Exchange.get_exchange_by_alias(alias),
                                                    const.Interval.DAILY, now - dt.timedelta(days=recent_days),
                                                    now)

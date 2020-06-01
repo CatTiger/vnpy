@@ -161,3 +161,12 @@ class Interval(Enum):
     HOUR = "1h"
     DAILY = "d"
     WEEKLY = "w"
+
+
+class IndexType(Enum):
+    """
+    指数类型
+    """
+    WIDE_BASE = "wide_base"
+    INDUSTRY = "industry"
+    OTHER = "other"

@@ -39,18 +39,4 @@ class TestDict(unittest.TestCase):
         # symbol, alias = '000016', 'XSHG'
         now = dt.datetime(2020, 5, 30)
         start_date = now - dt.timedelta(days=365)
-        # 1、最近1年的k线数据
-        df = dp.load_bar_data(symbol, alias, start_date=start_date, end_data=now)
-        mv = MainView(df)
-        mv.draw_main()
-        # 2、历史数据分析
-        start_date = dt.datetime(2010, 1, 1)
-        mean_reversion = MeanReversion(start_date, now, symbol + "." + alias, 'broad')
-        # 财务相关
-        mean_reversion.append_expected_profit()
-        mean_reversion.append_finance(n=7)
-        mean_reversion.append_pos(show=False)
-        # 价格相关
-        mean_reversion.append_poly_line()
-        mean_reversion.print_detail()
-        mean_reversion.draw_reference()
+
