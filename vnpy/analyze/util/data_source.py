@@ -16,8 +16,8 @@ class DataSource:
         if mode == 'remote':
             # 15802720411/Mm123456789
             # auth('13277099856', '1221gzcC')
-            # auth('15802720411', 'Mm123456789')
-            auth('18502700256', 'LIjing218')
+            auth('15802720411', 'Mm123456789')
+            # auth('18502700256', 'LIjing218')
 
     def get_index_stock(self, date: datetime, index_code: str):
         """

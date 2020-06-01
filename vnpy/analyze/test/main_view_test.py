@@ -33,8 +33,11 @@ class TestDict(unittest.TestCase):
         # symbol, alias = '000016', 'XSHG'
         # symbol, alias = '000913', 'XSHG'
         # symbol, alias = '000932', 'XSHG'
-        symbol, alias = '399006', 'XSHE'
-        now = dt.datetime(2020, 5, 28)
+        # symbol, alias = '000018', 'XSHG'
+        symbol, alias = '000015', 'XSHG'
+        # symbol, alias = '000015', 'XSHG'
+        # symbol, alias = '000016', 'XSHG'
+        now = dt.datetime(2020, 5, 30)
         start_date = now - dt.timedelta(days=365)
         # 1、最近1年的k线数据
         df = dp.load_bar_data(symbol, alias, start_date=start_date, end_data=now)
