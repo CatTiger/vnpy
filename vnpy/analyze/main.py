@@ -12,22 +12,27 @@ class Main:
 
     def main(self, index_info: IndexInfo):
         self.data_step(index_info)
-        # 1、最近1年的k线数据
-        ds = DataSource()
-        df = ds.load_bar_data(index_info.symbol, index_info.alias, start_date=datetime.now() - timedelta(365),
-                              end_data=datetime.now())
-        mv = MainView(df)
-        mv.draw_main()
+        if index_info.cal_sr:
+            # 1、最近1年的k线数据
+            ds = DataSource()
+            df = ds.load_bar_data(index_info.symbol, index_info.alias, start_date=datetime.now() - timedelta(365),
+                                  end_data=datetime.now())
+            mv = MainView(df)
+            mv.draw_main()
         # 2、历史数据分析
-        mean_reversion = MeanReversion(datetime(2010, 1, 1), datetime.now(), index_info.index_code, 'broad')
-        # 财务相关
-        mean_reversion.append_expected_profit()
-        mean_reversion.append_finance(n=7)
-        mean_reversion.append_pos(show=False)
-        # 价格相关
-        mean_reversion.append_poly_line()
-        mean_reversion.print_detail()
-        mean_reversion.draw_reference()
+        mean_reversion = MeanReversion(datetime(2010, 1, 1), datetime.now(), index_info.index_code,
+                                       load_finance=index_info.cal_finance)
+        if index_info.cal_close:
+            # 价格相关
+            mean_reversion.append_poly_line()
+            mean_reversion.draw_close()
+        if index_info.cal_finance:
+            # 财务相关
+            mean_reversion.append_expected_profit()
+            mean_reversion.append_finance(n=index_info.rolling_gap_year)
+            mean_reversion.append_pos(show=False)
+            mean_reversion.print_detail()
+            mean_reversion.draw_reference()
 
     def data_step(self, index_info: IndexInfo):
         """

@@ -11,19 +11,17 @@ import seaborn as sns
 class MeanReversion:
     """均值回复投资思路"""
 
-    def __init__(self, start_date: datetime, end_date: datetime, code: str, subject_type: str, load_finance=True):
+    def __init__(self, start_date: datetime, end_date: datetime, code: str, load_finance=True):
         """
         初始化
         :param start_date: 开始时间
         :param end_date: 结束时间
         :param code: 标识，eg: 000300.XSHG
-        :param subject_type: 标的类型，目前暂定（宽基指数（broad）、行业指数（Industry））
         :param load_finance: 是否拉取金融数据
         """
         self.start_date = start_date
         self.end_date = end_date
         self.code = code
-        self.subject_type = subject_type
         # 获取价格与财务数据
         code_sp = code.split('.')
         self.df = dp.load_bar_data(code_sp[0], code_sp[1], start_date=start_date, end_data=end_date)
@@ -199,7 +197,7 @@ class MeanReversion:
             # plt.axhline(df['lower'][-1], color='g', linestyle='-.')
             plt.show()
 
-    def __append_ema(self, fast=1200, mid=1800, slow=2400, show=False):
+    def append_ema(self, fast=1200, mid=1800, slow=2400, show=False):
         """
         添加均线
         :param fast: 快线 5年
@@ -216,6 +214,28 @@ class MeanReversion:
             fig, ax = plt.subplots(1, figsize=(16, 9))
             df[['close', 'EMA' + str(fast), 'EMA' + str(mid), 'EMA' + str(slow)]].plot(ax=ax, figsize=(16, 9))
             plt.show()
+
+    def draw_close(self, fast=1200, mid=1800, slow=2400):
+        """
+        画收盘价曲线
+        :param fast:
+        :param mid:
+        :param slow:
+        :return:
+        """
+        df = self.df
+        self.append_ema(fast, mid, slow)
+        fig, ax = plt.subplots(1, figsize=(16, 9))
+        ax.set_title('last close:%s, lower:%s, mean:%s, high:%s \n EMA%s:%s, EMA%s:%s, EMA%s:%s' % (
+            round(df['close'][-1], 0), round(df['lower'][-1], 0), round(df['poly_1'][-1], 0),
+            round(df['upper'][-1], 0),
+            fast, round(df['EMA' + str(fast)][-1], 0),
+            mid, round(df['EMA' + str(mid)][-1], 0),
+            slow, round(df['EMA' + str(slow)][-1], 0)))
+        df[['close', 'poly_1', 'upper', 'lower', 'EMA' + str(fast), 'EMA' + str(mid), 'EMA' + str(slow)]] \
+            .plot(ax=ax, figsize=(16, 9))
+        plt.axhline(df['close'][-1], color='#808080', linestyle='-.')
+        plt.show()
 
     def print_detail(self):
         """
@@ -238,7 +258,7 @@ class MeanReversion:
             output += '定投比例: %s \n\n' % (str(row.invest_per) + '%')
             print(output)
 
-    def draw_reference(self, fast=1200, mid=1800, slow=2400):
+    def draw_reference(self):
         """画出参考图"""
         df = self.df
         # 1、财务参考：PE、PB百分位
@@ -247,19 +267,6 @@ class MeanReversion:
         df[['pe_mid', 'pe_mid_r', 'pe_mid_0.8', 'pe_mid_0.2']].plot(secondary_y=['pe_mid_r'], ax=axs[0][1], alpha=.8)
         df[['pb', 'pb_r', 'pb_0.8', 'pb_0.2']].plot(secondary_y=['pb_r'], ax=axs[1][0], alpha=.8)
         df[['pb_mid', 'pb_mid_r', 'pb_mid_0.8', 'pb_mid_0.2']].plot(secondary_y=['pb_mid_r'], ax=axs[1][1], alpha=.8)
-        plt.show()
-        # 2、收盘价参考
-        self.__append_ema(fast, mid, slow)
-        fig, ax = plt.subplots(1, figsize=(16, 9))
-        ax.set_title('last close:%s, lower:%s, mean:%s, high:%s \n EMA%s:%s, EMA%s:%s, EMA%s:%s' % (
-            round(df['close'][-1], 0), round(df['lower'][-1], 0), round(df['poly_1'][-1], 0),
-            round(df['upper'][-1], 0),
-            fast, round(df['EMA' + str(fast)][-1], 0),
-            mid, round(df['EMA' + str(mid)][-1], 0),
-            slow, round(df['EMA' + str(slow)][-1], 0)))
-        df[['close', 'poly_1', 'upper', 'lower', 'EMA' + str(fast), 'EMA' + str(mid), 'EMA' + str(slow)]] \
-            .plot(ax=ax, figsize=(16, 9))
-        plt.axhline(df['close'][-1], color='#808080', linestyle='-.')
         plt.show()
 
     def draw_attribution_analyze(self):
