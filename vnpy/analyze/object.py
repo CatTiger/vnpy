@@ -6,7 +6,7 @@ from vnpy.trader.constant import Exchange
 class IndexInfo:
     """指数信息"""
 
-    def __init__(self, index_code: str, desc: str, trace_code: str, start_date: datetime, type: IndexType, inited=True,
+    def __init__(self, index_code: str, desc: str, trace_code: str, start_date: datetime, type: IndexType,
                  cal_sr=True,
                  cal_close=True, cal_finance=True, rolling_gap_year=7):
         self.index_code = index_code
@@ -17,7 +17,6 @@ class IndexInfo:
         self.trace_code = trace_code
         self.start_date = start_date
         self.type = type
-        self.inited = inited
         self.cal_sr = cal_sr
         self.cal_close = cal_close
         self.cal_finance = cal_finance
