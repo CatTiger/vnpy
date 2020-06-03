@@ -26,15 +26,18 @@ etf_set = [
     IndexInfo('000991.XSHG', '全指医药', '159938', datetime(2011, 8, 2), IndexType.INDUSTRY),
 
     IndexInfo('000012.XSHG', '国债指数', '511010', datetime(2003, 1, 2), IndexType.OTHER),
+
+    IndexInfo('159920.XSHG', '恒生指数', '', datetime(2003, 1, 2), IndexType.OTHER),
+    IndexInfo('501050.XSHG', '50AH优选', '', datetime(2003, 1, 2), IndexType.OTHER),
+    IndexInfo('159916.XSHG', '基本面60', '', datetime(2003, 1, 2), IndexType.OTHER),
+    IndexInfo('513030.XSHG', '德国DAX', '', datetime(2003, 1, 2), IndexType.OTHER),
+    IndexInfo('513500.XSHG', '标普500', '', datetime(2003, 1, 2), IndexType.OTHER),
+    IndexInfo('513100.XSHG', '纳指100', '', datetime(2003, 1, 2), IndexType.OTHER),
 ]
 
-# 恒生指数 159920
+#  159920
 # 国企指数 510900 000056.XSHG	上证国企 000956.XSHG	国企200 0.9左右
 
-# 50AH优选 501050
-# 基本面60 159916 000925.XSHG	基本面50
+#
+#   000925.XSHG	基本面50
 # 500低波
-
-# 德国DAX 513500
-# 标普500 513500
-# 纳指100 513100
