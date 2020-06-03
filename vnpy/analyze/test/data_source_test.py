@@ -20,22 +20,13 @@ class TestDataSource(unittest.TestCase):
         # result = ds.get_index_finance(dt.datetime(2020, 5, 18), '000300.XSHG')
         # print(result)
 
-    def test_save_finance(self):
+    def test_get_finance(self):
         # 初始化沪深300所有数据
         ds = DataSource(mode='remote')
-        # bar_datas = database_manager.load_bar_data('000300', const.Exchange.get_exchange_by_alias('XSHG'),
-        #                                            const.Interval.DAILY, dt.datetime(2005, 1, 1),
-        #                                            dt.datetime(2006, 1, 10))
-        # trade_dates = []
-        # for bar in bar_datas:
-        #     trade_dates.append(bar.datetime)
-        start_date = datetime.today() - timedelta(days=2)
-        trade_dates = [(start_date + timedelta(days=i)).replace(hour=0, minute=0, second=0, microsecond=0) for i in
-                       range(1, 3)]
-        ds.save_index_finance(trade_dates, '000300.XSHG')
+        ds.get_index_finance(datetime(2020, 4, 17), '000042.XSHG')
 
     def test_init(self):
-        symbol, alias = '000991', 'XSHG'
+        symbol, alias = '000042', 'XSHG'
         ds = DataSource(mode='remote')
         ds.save_bar_data(symbol, alias)
         bar_datas = database_manager.load_bar_data(symbol, const.Exchange.get_exchange_by_alias(alias),
@@ -45,6 +36,6 @@ class TestDataSource(unittest.TestCase):
         for bar in bar_datas:
             finance_data = ds.get_index_finance(bar.datetime, symbol + '.' + alias)
             finance_datas.append(finance_data)
-            if len(finance_datas) == 50:
+            if len(finance_datas) == 20:
                 database_manager.save_finance_data(finance_datas)
                 finance_datas.clear()
