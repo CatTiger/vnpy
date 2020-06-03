@@ -87,9 +87,9 @@ class TestDict(unittest.TestCase):
         # end_date = dt.datetime(2020, 5, 22)
         # mean_reversion = MeanReversion(start_date, end_date, '000001.XSHG', 'broad', load_finance=False)
         # mean_reversion.append_poly_line(show=True)
-        start_date = dt.datetime(2005, 1, 1)
+        start_date = dt.datetime(2016, 1, 1)
         end_date = dt.datetime(2020, 5, 1)
-        mean_reversion = MeanReversion(start_date, end_date, '000300.XSHG', 'broad', load_finance=False)
+        mean_reversion = MeanReversion(start_date, end_date, '000300.XSHG', load_finance=False)
         mean_reversion.append_poly_line(show=True)
 
     def test_foo(self):

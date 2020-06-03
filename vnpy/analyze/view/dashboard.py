@@ -198,5 +198,6 @@ if __name__ == "__main__":
     # relation_view('000038.XSHG', '510650.XSHG')
     # relation_view('399551.XSHE', '515900.XSHG', 50)
     # relation_view('000925.XSHG', '512750.XSHG')
-    relation_view('000922.XSHG', '000015.XSHG', 2200)
+    # relation_view('000922.XSHG', '000015.XSHG', 2200)
+    relation_view('000991.XSHG', '159938.XSHE')
 

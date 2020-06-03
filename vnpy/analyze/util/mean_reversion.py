@@ -185,6 +185,7 @@ class MeanReversion:
         # 收盘价标准差
         close_std = 0.9 * np.std(df.close)
         df['poly_1'] = polynomial(x)
+        print('斜率:' + str((df['poly_1'][-1] - df['poly_1'][0]) / len(x)))
         df['upper'] = polynomial(x) + close_std
         df['lower'] = polynomial(x) - close_std
         if show:

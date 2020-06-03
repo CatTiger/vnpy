@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from vnpy.analyze.view.main_view import MainView
 from vnpy.analyze.util.mean_reversion import MeanReversion
 from vnpy.trader.constant import IndexType
-
+import vnpy.analyze.data.etf_codes as etfs
 
 class Main:
 
@@ -60,5 +60,6 @@ class Main:
 if __name__ == "__main__":
     main = Main()
     # main.main(IndexInfo('000300.XSHG', '', '', datetime(2009, 1, 1), IndexType.WIDE_BASE))
-    main.main(IndexInfo('513100.XSHG', '', '', datetime(2014, 1, 1), IndexType.INDUSTRY, inited=True, cal_finance=False,
-                        rolling_gap_year=3))
+    # main.main(IndexInfo('000015.XSHG', '', '', datetime(2009, 1, 1), IndexType.INDUSTRY))
+    # main.main(IndexInfo('513100.XSHG', '', '', datetime(2014, 1, 1), IndexType.INDUSTRY, inited=True, cal_finance=False,
+    #                     rolling_gap_year=3))
