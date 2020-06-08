@@ -55,6 +55,9 @@ class MainView:
         resistance_df = resistance_line.find_points()
         resistance_df['date'] = days_reshape.loc[resistance_df.x.tolist()]['date'].reset_index(drop=True)
         ax.scatter(resistance_df.date.values, resistance_df.y, marker='x', s=66, c='#000000', label='resistance point')
+        # TODO: 打印出支撑域阻力的日期与点数
+        # print(support_df.y)
+        # print(resistance_df.y)
         # TODO: 1.3 趋势
         ax.legend()
 

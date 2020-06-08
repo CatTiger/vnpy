@@ -34,7 +34,7 @@ class DataSource:
         exchange = const.Exchange.get_exchange_by_alias(alias)
         data = get_bars(symbol + '.' + alias, count, unit='1d',
                         fields=['date', 'open', 'high', 'low', 'close', 'volume'],
-                        include_now=False, end_dt=None, fq_ref_date=None, df=True)
+                        include_now=True, end_dt=None, fq_ref_date=None, df=True)
         bars = []
         for row in data.iterrows():
             data = row[1]

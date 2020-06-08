@@ -216,7 +216,7 @@ class MeanReversion:
             df[['close', 'EMA' + str(fast), 'EMA' + str(mid), 'EMA' + str(slow)]].plot(ax=ax, figsize=(16, 9))
             plt.show()
 
-    def draw_close(self, fast=1200, mid=1800, slow=2400):
+    def draw_close(self, fast=1200, mid=1800, slow=1800):
         """
         画收盘价曲线
         :param fast:
@@ -224,6 +224,7 @@ class MeanReversion:
         :param slow:
         :return:
         """
+        # FIXME: 时间均线由创建时间确定，如创建时间过短，则无法展示
         df = self.df
         self.append_ema(fast, mid, slow)
         fig, ax = plt.subplots(1, figsize=(16, 9))
