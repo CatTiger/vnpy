@@ -205,4 +205,5 @@ if __name__ == "__main__":
 
     # save_data_to_db('000012', 'XSHG')  # 国债指数 2003-01-02
 
-    save_data_to_db('513100', 'XSHG')  # TMT50
+    # save_data_to_db('513100', 'XSHG')  # TMT50
+    save_data_to_db('000001', 'XSHG')
