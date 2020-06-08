@@ -8,7 +8,7 @@ from vnpy.analyze.util.mean_reversion import MeanReversion
 from vnpy.trader.constant import IndexType
 
 
-# import vnpy.analyze.data.etf_codes as etfs
+import vnpy.analyze.data.etf_codes as etfs
 
 class Main:
 
@@ -61,6 +61,10 @@ class Main:
 
 if __name__ == "__main__":
     main = Main()
+    for index_info in etfs.etf_set:
+        if index_info.index_code == '000932.XSHG':
+            main.main(index_info)
+
     # IndexInfo('000021.XSHG' 1
     # IndexInfo('000042.XSHG' 1
     # IndexInfo('000038.XSHG' 1
@@ -70,7 +74,7 @@ if __name__ == "__main__":
     # IndexInfo('399971.XSHE', 太高
     # IndexInfo('000993.XSHG', 价不高、百分位高
     # IndexInfo('000991.XSHG', 双高
-    main.main(IndexInfo('000991.XSHG', '全指医药', '159938', datetime(2011, 8, 2), IndexType.INDUSTRY, cal_sr=False))
+    # main.main(IndexInfo('000029.XSHG', '180价值', '159938', datetime(2009, 1, 9), IndexType.INDUSTRY))
     # main.main(IndexInfo('000015.XSHG', '', '', datetime(2009, 1, 1), IndexType.INDUSTRY))
     # main.main(IndexInfo('513100.XSHG', '', '', datetime(2014, 1, 1), IndexType.INDUSTRY, inited=True, cal_finance=False,
     #                     rolling_gap_year=3))

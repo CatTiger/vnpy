@@ -39,3 +39,8 @@ class TestDataSource(unittest.TestCase):
             if len(finance_datas) == 20:
                 database_manager.save_finance_data(finance_datas)
                 finance_datas.clear()
+
+    def test_init_price(self):
+        symbol, alias = '513100', 'XSHG'
+        ds = DataSource(mode='remote')
+        ds.save_bar_data(symbol, alias)
