@@ -129,7 +129,8 @@ class DataSource:
         finance_datas = []
         for date in trade_dates:
             finance_data = self.get_index_finance(date, index_code)
-            finance_datas.append(finance_data)
+            if finance_data:
+                finance_datas.append(finance_data)
         database_manager.save_finance_data(finance_datas)
 
     def init_index_base_data(self, index_code, count=5000):
