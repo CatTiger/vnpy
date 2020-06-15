@@ -33,6 +33,7 @@ df['change'] = df['buy_amount'] - df['sell_amount']
 
 # 获取大盘数据
 ds = DataSource(mode='remote')
+ds.save_bar_data('000001', 'XSHG', 50)  # 补上数据库中不存在数据
 df_close = ds.load_bar_data('000001', 'XSHG', start_date=datetime(df.index[0].year, df.index[0].month, df.index[0].day),
                             end_data=datetime(df.index[-1].year, df.index[-1].month, df.index[-1].day))
 df_close.set_index(['date'], inplace=True)
@@ -51,3 +52,5 @@ for xtick in ax.get_xticklabels():
 ax.legend()
 ax1v.legend()
 plt.show()
+
+print('总流入金额:%s亿' % df['change'].sum())
