@@ -62,7 +62,7 @@ class Main:
 if __name__ == "__main__":
     main = Main()
     for index_info in etfs.etf_set:
-        if index_info.index_code == '000029.XSHG':
+        if index_info.index_code == '513100.XSHG':
             main.main(index_info)
 
     # IndexInfo('000021.XSHG' 1
