@@ -7,14 +7,11 @@ from sympy import *
 
 class TestDict(unittest.TestCase):
     def test_cal_annual_returns(self):
-        trades = {pd.Timestamp('2018-01-01'): 5000, pd.Timestamp('2018-05-01'): 5000}
-        end_dates = pd.Timestamp('2019-01-01')
-        end_cash = 15000
-        expression = CalReturns.cal_annual_returns(trades, end_dates, end_cash)
-        print(expression)
-        x = Symbol('x')
-        # TODO: 计算过于耗时，使用年化1% 迭代到 100%,尝试找出最合适的值
-        print(solve(expression, x))
+        trades = {pd.Timestamp('2015-01-01'): 50000, pd.Timestamp('2016-01-01'): 50000, pd.Timestamp('2017-01-01'): 50000}
+        end_dates = pd.Timestamp('2021-01-01')
+        end_cash = 192000
+        result = CalReturns.annual_returns(trades, end_dates, end_cash)
+        print(result)
 
     def test_annual_returns(self):
         print('xxx')

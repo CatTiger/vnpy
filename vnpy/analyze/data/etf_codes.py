@@ -22,7 +22,7 @@ etf_set = [
     IndexInfo('000029.XSHG', '180价值', '510030', datetime(2009, 1, 9), IndexType.INDUSTRY),
     IndexInfo('399393.XSHE', '国证地产', '512200', datetime(2012, 8, 20), IndexType.INDUSTRY),
     IndexInfo('399395.XSHE', '国证有色', '512400', datetime(2012, 10, 29), IndexType.INDUSTRY),
-    IndexInfo('399971.XSHE', '中证传媒', '512980', datetime(2014, 4, 11), IndexType.INDUSTRY, rolling_gap_year=6),
+    IndexInfo('399971.XSHE', '中证传媒', '512980', datetime(2014, 4, 11), IndexType.INDUSTRY, rolling_gap_year=5),
     IndexInfo('000993.XSHG', '全指信息', '159939', datetime(2011, 8, 2), IndexType.INDUSTRY),
     IndexInfo('000991.XSHG', '全指医药', '159938', datetime(2011, 8, 2), IndexType.INDUSTRY),
 

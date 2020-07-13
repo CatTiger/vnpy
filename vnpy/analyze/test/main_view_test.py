@@ -4,6 +4,7 @@ import datetime as dt
 from jqdatasdk import *
 from vnpy.analyze.util.mean_reversion import MeanReversion
 import vnpy.analyze.data.data_prepare as dp
+import pandas as pd
 
 
 class TestDict(unittest.TestCase):
@@ -40,3 +41,22 @@ class TestDict(unittest.TestCase):
         now = dt.datetime(2020, 5, 30)
         start_date = now - dt.timedelta(days=365)
 
+    def test_annual_return(self):
+        mean_reversion = MeanReversion(dt.datetime(2005, 1, 1), dt.datetime.now(), '000012.XSHG',
+                                       load_finance=False)
+        pre_date = ''
+        pre_year = 0
+        pre_close = 0
+        for index, row in mean_reversion.df.iterrows():
+            if pre_year == 0 and pre_close == 0:
+                pre_year = index.year
+                pre_close = row.close
+                pre_date = dt.datetime.strftime(index, "%Y-%m-%d")
+            if index.year != pre_year:
+                cur_date = dt.datetime.strftime(index, "%Y-%m-%d")
+                print('date:%s -> date:%s, rate:%s%s, pre:%s, cur:%s' % (
+                    pre_date, cur_date, round(100 * (row.close - pre_close) / pre_close, 3), '%', round(pre_close, 3),
+                    round(row.close, 3)))
+                pre_year = index.year
+                pre_close = row.close
+                pre_date = cur_date
